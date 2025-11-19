@@ -2,14 +2,12 @@ import { Outlet, createRootRouteWithContext } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
-import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
-
-import type { QueryClient, UseQueryResult } from '@tanstack/react-query'
-import type { SessionInterface } from '@/shared/schema/session.schema'
+import type { QueryClient } from '@tanstack/react-query'
+import type { useSession } from '@/features/session/hooks/useSession'
 
 interface MyRouterContext {
   queryClient: QueryClient
-  session: UseQueryResult<SessionInterface, Error>
+  session: ReturnType<typeof useSession>
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
@@ -26,7 +24,6 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
             name: 'Tanstack Router',
             render: <TanStackRouterDevtoolsPanel />,
           },
-          TanStackQueryDevtools,
         ]}
       />
     </>

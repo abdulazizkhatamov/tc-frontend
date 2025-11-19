@@ -1,8 +1,9 @@
 // tanstackRouter.provider.tsx
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { routeTree } from '@/routeTree.gen'
-import { getContext } from '@/integrations/tanstack-query/root-provider'
-import { useSession } from '@/shared/schema/session.api'
+import { getContext } from '@/app/providers/query.provider'
+import LoadingBackdrop from '@/shared/components/LoadingBackdrop'
+import { useSession } from '@/features/session/hooks/useSession'
 
 // Single context shared across router + providers
 const context = getContext()
@@ -27,6 +28,11 @@ declare module '@tanstack/react-router' {
 
 export default function TanstackRouterProvider() {
   const session = useSession()
+
+  if (!session.isSessionReady) {
+    return <LoadingBackdrop open={session.isSessionReady} />
+  }
+
   return (
     <>
       <RouterProvider router={router} context={{ ...context, session }} />

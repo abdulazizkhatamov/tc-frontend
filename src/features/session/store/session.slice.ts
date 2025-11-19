@@ -5,6 +5,7 @@ import axiosInstance from '@/config/axios.config'
 
 const initialState: SessionInterface = {
   session: null,
+  isSessionReady: false,
 }
 
 export const fetchSession = createAsyncThunk(
@@ -27,9 +28,11 @@ const sessionSlice = createSlice({
     builder
       .addCase(fetchSession.fulfilled, (state, action) => {
         state.session = action.payload.session
+        state.isSessionReady = true
       })
       .addCase(fetchSession.rejected, (state) => {
         state.session = null
+        state.isSessionReady = true
       })
   },
 })
