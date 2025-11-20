@@ -136,8 +136,8 @@ export default function Sidebar({
           >
             <SidebarHeaderItem>Main items</SidebarHeaderItem>
             <SidebarPageItem
-              id="staff"
-              title="Staff"
+              id="employees"
+              title="Employees"
               icon={<PersonIcon />}
               href="/staff"
               selected={!!matchPath({ to: '/staff', fuzzy: true })}
@@ -174,7 +174,7 @@ export default function Sidebar({
                     title="Traffic"
                     icon={<DescriptionIcon />}
                     href="/reports/traffic"
-                    selected={!!matchPath({ to: '/reports/sales' })}
+                    selected={!!matchPath({ to: '/reports/traffic' })}
                   />
                 </List>
               }
@@ -193,14 +193,12 @@ export default function Sidebar({
       return {
         displayPrint: 'none',
         width: drawerWidth,
-        height: '100vh', // <-- ENSURE FULL HEIGHT
         flexShrink: 0,
         ...getDrawerWidthTransitionMixin(expanded),
         ...(isTemporary ? { position: 'absolute' } : {}),
         [`& .MuiDrawer-paper`]: {
           position: 'absolute',
           width: drawerWidth,
-          height: '100vh', // <-- ENSURE FULL HEIGHT
           boxSizing: 'border-box',
           backgroundImage: 'none',
           ...getDrawerWidthTransitionMixin(expanded),

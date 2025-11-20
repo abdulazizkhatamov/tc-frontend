@@ -55,46 +55,50 @@ function RouteComponent() {
   const layoutRef = React.useRef<HTMLDivElement>(null)
 
   return (
-    <Box
-      ref={layoutRef}
-      sx={{
-        position: 'relative',
-        display: 'flex',
-        overflow: 'hidden',
-        height: '100%',
-        width: '100%',
-      }}
-    >
-      <AppHeader
-        logo={null}
-        title=""
-        menuOpen={isNavigationExpanded}
-        onToggleMenu={handleToggleHeaderMenu}
-      />
-      <Sidebar
-        expanded={isNavigationExpanded}
-        setExpanded={setIsNavigationExpanded}
-        container={layoutRef.current ?? undefined}
-      />
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          flex: 1,
-          minWidth: 0,
-        }}
-      >
-        <Toolbar sx={{ displayPrint: 'none' }} />
+    <Box sx={{ height: '100dvh', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ flex: '1 1 0%', overflow: 'auto' }}>
         <Box
-          component="main"
+          ref={layoutRef}
           sx={{
+            position: 'relative',
             display: 'flex',
-            flexDirection: 'column',
-            flex: 1,
-            overflow: 'auto',
+            overflow: 'hidden',
+            height: '100%',
+            width: '100%',
           }}
         >
-          <Outlet />
+          <AppHeader
+            logo={null}
+            title=""
+            menuOpen={isNavigationExpanded}
+            onToggleMenu={handleToggleHeaderMenu}
+          />
+          <Sidebar
+            expanded={isNavigationExpanded}
+            setExpanded={setIsNavigationExpanded}
+            container={layoutRef.current ?? undefined}
+          />
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              flex: 1,
+              minWidth: 0,
+            }}
+          >
+            <Toolbar sx={{ displayPrint: 'none' }} />
+            <Box
+              component="main"
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                flex: 1,
+                overflow: 'auto',
+              }}
+            >
+              <Outlet />
+            </Box>
+          </Box>
         </Box>
       </Box>
     </Box>
