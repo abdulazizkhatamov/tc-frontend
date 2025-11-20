@@ -13,6 +13,10 @@ import { Route as authRouteRouteImport } from './routes/(auth)/route'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as appIndexRouteImport } from './routes/(app)/index'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
+import { Route as appStaffIndexRouteImport } from './routes/(app)/staff/index'
+import { Route as appReportsIndexRouteImport } from './routes/(app)/reports/index'
+import { Route as appReportsTrafficRouteImport } from './routes/(app)/reports/traffic'
+import { Route as appReportsSalesRouteImport } from './routes/(app)/reports/sales'
 
 const authRouteRoute = authRouteRouteImport.update({
   id: '/(auth)',
@@ -32,14 +36,42 @@ const authLoginRoute = authLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => authRouteRoute,
 } as any)
+const appStaffIndexRoute = appStaffIndexRouteImport.update({
+  id: '/staff/',
+  path: '/staff/',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appReportsIndexRoute = appReportsIndexRouteImport.update({
+  id: '/reports/',
+  path: '/reports/',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appReportsTrafficRoute = appReportsTrafficRouteImport.update({
+  id: '/reports/traffic',
+  path: '/reports/traffic',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appReportsSalesRoute = appReportsSalesRouteImport.update({
+  id: '/reports/sales',
+  path: '/reports/sales',
+  getParentRoute: () => appRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/login': typeof authLoginRoute
   '/': typeof appIndexRoute
+  '/reports/sales': typeof appReportsSalesRoute
+  '/reports/traffic': typeof appReportsTrafficRoute
+  '/reports': typeof appReportsIndexRoute
+  '/staff': typeof appStaffIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof authLoginRoute
   '/': typeof appIndexRoute
+  '/reports/sales': typeof appReportsSalesRoute
+  '/reports/traffic': typeof appReportsTrafficRoute
+  '/reports': typeof appReportsIndexRoute
+  '/staff': typeof appStaffIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -47,13 +79,38 @@ export interface FileRoutesById {
   '/(auth)': typeof authRouteRouteWithChildren
   '/(auth)/login': typeof authLoginRoute
   '/(app)/': typeof appIndexRoute
+  '/(app)/reports/sales': typeof appReportsSalesRoute
+  '/(app)/reports/traffic': typeof appReportsTrafficRoute
+  '/(app)/reports/': typeof appReportsIndexRoute
+  '/(app)/staff/': typeof appStaffIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/login' | '/'
+  fullPaths:
+    | '/login'
+    | '/'
+    | '/reports/sales'
+    | '/reports/traffic'
+    | '/reports'
+    | '/staff'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/'
-  id: '__root__' | '/(app)' | '/(auth)' | '/(auth)/login' | '/(app)/'
+  to:
+    | '/login'
+    | '/'
+    | '/reports/sales'
+    | '/reports/traffic'
+    | '/reports'
+    | '/staff'
+  id:
+    | '__root__'
+    | '/(app)'
+    | '/(auth)'
+    | '/(auth)/login'
+    | '/(app)/'
+    | '/(app)/reports/sales'
+    | '/(app)/reports/traffic'
+    | '/(app)/reports/'
+    | '/(app)/staff/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -91,15 +148,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authLoginRouteImport
       parentRoute: typeof authRouteRoute
     }
+    '/(app)/staff/': {
+      id: '/(app)/staff/'
+      path: '/staff'
+      fullPath: '/staff'
+      preLoaderRoute: typeof appStaffIndexRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/reports/': {
+      id: '/(app)/reports/'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof appReportsIndexRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/reports/traffic': {
+      id: '/(app)/reports/traffic'
+      path: '/reports/traffic'
+      fullPath: '/reports/traffic'
+      preLoaderRoute: typeof appReportsTrafficRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/reports/sales': {
+      id: '/(app)/reports/sales'
+      path: '/reports/sales'
+      fullPath: '/reports/sales'
+      preLoaderRoute: typeof appReportsSalesRouteImport
+      parentRoute: typeof appRouteRoute
+    }
   }
 }
 
 interface appRouteRouteChildren {
   appIndexRoute: typeof appIndexRoute
+  appReportsSalesRoute: typeof appReportsSalesRoute
+  appReportsTrafficRoute: typeof appReportsTrafficRoute
+  appReportsIndexRoute: typeof appReportsIndexRoute
+  appStaffIndexRoute: typeof appStaffIndexRoute
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
   appIndexRoute: appIndexRoute,
+  appReportsSalesRoute: appReportsSalesRoute,
+  appReportsTrafficRoute: appReportsTrafficRoute,
+  appReportsIndexRoute: appReportsIndexRoute,
+  appStaffIndexRoute: appStaffIndexRoute,
 }
 
 const appRouteRouteWithChildren = appRouteRoute._addFileChildren(

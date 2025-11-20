@@ -1,11 +1,7 @@
 import * as React from 'react'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import type { ThemeOptions } from '@mui/material/styles'
-import { inputsCustomizations } from '@/shared/customizations/inputs'
-import { dataDisplayCustomizations } from '@/shared/customizations/dataDisplay'
-import { feedbackCustomizations } from '@/shared/customizations/feedback'
-import { navigationCustomizations } from '@/shared/customizations/navigation'
-import { surfacesCustomizations } from '@/shared/customizations/surfaces'
+
 import {
   colorSchemes,
   shadows,
@@ -38,11 +34,6 @@ export default function MuiProvider(props: AppThemeProps) {
           shadows,
           shape,
           components: {
-            ...inputsCustomizations,
-            ...dataDisplayCustomizations,
-            ...feedbackCustomizations,
-            ...navigationCustomizations,
-            ...surfacesCustomizations,
             ...themeComponents,
           },
         })
