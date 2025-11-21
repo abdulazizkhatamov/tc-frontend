@@ -1,5 +1,4 @@
 import { Toaster } from 'sonner'
-import MuiProvider from './mui.provider'
 import ReduxStoreProvider from './redux.provider'
 import TanstackRouterProvider from './router.provider'
 
@@ -13,10 +12,8 @@ export default function Providers() {
   return (
     <ReduxStoreProvider>
       <TanstackQueryProvider {...TanStackQueryProviderContext}>
-        <MuiProvider>
-          <TanstackRouterProvider />
-          <Toaster />
-        </MuiProvider>
+        <TanstackRouterProvider />
+        <Toaster />
       </TanstackQueryProvider>
     </ReduxStoreProvider>
   )

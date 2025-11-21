@@ -1,14 +1,15 @@
-import MuiCard from '@mui/material/Card'
-import { styled } from '@mui/material/styles'
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
+import MuiCard from '@mui/joy/Card'
+import { styled } from '@mui/joy/styles'
+import Box from '@mui/joy/Box'
 import { createFileRoute } from '@tanstack/react-router'
-import FormControl from '@mui/material/FormControl'
-import FormLabel from '@mui/material/FormLabel'
-import TextField from '@mui/material/TextField'
-import Button from '@mui/material/Button'
+import FormControl from '@mui/joy/FormControl'
+import FormLabel from '@mui/joy/FormLabel'
+import Button from '@mui/joy/Button'
 import { useForm } from '@tanstack/react-form'
 import z from 'zod'
+import Input from '@mui/joy/Input'
+import Typography from '@mui/joy/Typography'
+import FormHelperText from '@mui/joy/FormHelperText'
 import { useSessionLogin } from '@/shared/api/session.api'
 
 export const Route = createFileRoute('/(auth)/login')({
@@ -38,7 +39,6 @@ function RouteComponent() {
     <Card variant="outlined">
       <Typography
         component="h1"
-        variant="h4"
         sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
       >
         Sign in
@@ -59,12 +59,12 @@ function RouteComponent() {
           marginTop: 2,
         }}
       >
-        <FormControl>
-          <FormLabel htmlFor="email">Email</FormLabel>
-          <Field
-            name="email"
-            children={({ state, handleChange, handleBlur }) => (
-              <TextField
+        <Field
+          name="email"
+          children={({ state, handleChange, handleBlur }) => (
+            <FormControl error={!state.meta.isValid}>
+              <FormLabel htmlFor="email">Email</FormLabel>
+              <Input
                 id="email"
                 type="email"
                 placeholder="your@email.com"
@@ -73,21 +73,21 @@ function RouteComponent() {
                 fullWidth
                 variant="outlined"
                 error={!state.meta.isValid}
-                helperText={state.meta.errors[0]?.message}
                 value={state.value}
                 onChange={(e) => handleChange(e.target.value)}
                 onBlur={handleBlur}
               />
-            )}
-          />
-        </FormControl>
+              <FormHelperText>{state.meta.errors[0]?.message}</FormHelperText>
+            </FormControl>
+          )}
+        />
 
-        <FormControl>
-          <FormLabel htmlFor="password">Password</FormLabel>
-          <Field
-            name="password"
-            children={({ state, handleChange, handleBlur }) => (
-              <TextField
+        <Field
+          name="password"
+          children={({ state, handleChange, handleBlur }) => (
+            <FormControl error={!state.meta.isValid}>
+              <FormLabel htmlFor="password">Password</FormLabel>
+              <Input
                 id="password"
                 type="password"
                 placeholder="••••••"
@@ -95,21 +95,16 @@ function RouteComponent() {
                 fullWidth
                 variant="outlined"
                 error={!state.meta.isValid}
-                helperText={state.meta.errors[0]?.message}
                 value={state.value}
                 onChange={(e) => handleChange(e.target.value)}
                 onBlur={handleBlur}
               />
-            )}
-          />
-        </FormControl>
+              <FormHelperText>{state.meta.errors[0]?.message}</FormHelperText>
+            </FormControl>
+          )}
+        />
 
-        <Button
-          type="submit"
-          fullWidth
-          variant="contained"
-          disabled={isPending}
-        >
+        <Button type="submit" fullWidth variant="solid" disabled={isPending}>
           {isPending ? 'Signing in...' : 'Sign in'}
         </Button>
       </Box>

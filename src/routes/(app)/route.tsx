@@ -1,11 +1,16 @@
-import React from 'react'
-import Box from '@mui/material/Box'
-import { useTheme } from '@mui/material/styles'
-import Toolbar from '@mui/material/Toolbar'
+import { CssVarsProvider } from '@mui/joy/styles'
+import CssBaseline from '@mui/joy/CssBaseline'
+import Box from '@mui/joy/Box'
+import Breadcrumbs from '@mui/joy/Breadcrumbs'
+import Link from '@mui/joy/Link'
+import Typography from '@mui/joy/Typography'
+
+import HomeRoundedIcon from '@mui/icons-material/HomeRounded'
+import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded'
+
 import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import AppHeader from '@/shared/components/AppHeader/AppHeader'
-import Sidebar from '@/features/sidebar/components/Sidebar'
+import Header from '@/shared/components/Header'
+import Sidebar from '@/shared/components/Sidebar'
 
 export const Route = createFileRoute('/(app)')({
   component: RouteComponent,
@@ -17,90 +22,65 @@ export const Route = createFileRoute('/(app)')({
 })
 
 function RouteComponent() {
-  const theme = useTheme()
-
-  const [isDesktopNavigationExpanded, setIsDesktopNavigationExpanded] =
-    React.useState(true)
-  const [isMobileNavigationExpanded, setIsMobileNavigationExpanded] =
-    React.useState(false)
-
-  const isOverMdViewport = useMediaQuery(theme.breakpoints.up('md'))
-
-  const isNavigationExpanded = isOverMdViewport
-    ? isDesktopNavigationExpanded
-    : isMobileNavigationExpanded
-
-  const setIsNavigationExpanded = React.useCallback(
-    (newExpanded: boolean) => {
-      if (isOverMdViewport) {
-        setIsDesktopNavigationExpanded(newExpanded)
-      } else {
-        setIsMobileNavigationExpanded(newExpanded)
-      }
-    },
-    [
-      isOverMdViewport,
-      setIsDesktopNavigationExpanded,
-      setIsMobileNavigationExpanded,
-    ],
-  )
-
-  const handleToggleHeaderMenu = React.useCallback(
-    (isExpanded: boolean) => {
-      setIsNavigationExpanded(isExpanded)
-    },
-    [setIsNavigationExpanded],
-  )
-
-  const layoutRef = React.useRef<HTMLDivElement>(null)
-
   return (
-    <Box sx={{ height: '100dvh', display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ flex: '1 1 0%', overflow: 'auto' }}>
+    <CssVarsProvider disableTransitionOnChange>
+      <CssBaseline />
+      <Box sx={{ display: 'flex', minHeight: '100dvh' }}>
+        <Header />
+        <Sidebar />
         <Box
-          ref={layoutRef}
+          component="main"
+          className="MainContent"
           sx={{
-            position: 'relative',
+            px: { xs: 2, md: 6 },
+            pt: {
+              xs: 'calc(12px + var(--Header-height))',
+              sm: 'calc(12px + var(--Header-height))',
+              md: 3,
+            },
+            pb: { xs: 2, sm: 2, md: 3 },
+            flex: 1,
             display: 'flex',
-            overflow: 'hidden',
-            height: '100%',
-            width: '100%',
+            flexDirection: 'column',
+            minWidth: 0,
+            height: '100dvh',
+            gap: 1,
           }}
         >
-          <AppHeader
-            logo={null}
-            title=""
-            menuOpen={isNavigationExpanded}
-            onToggleMenu={handleToggleHeaderMenu}
-          />
-          <Sidebar
-            expanded={isNavigationExpanded}
-            setExpanded={setIsNavigationExpanded}
-            container={layoutRef.current ?? undefined}
-          />
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              flex: 1,
-              minWidth: 0,
-            }}
-          >
-            <Toolbar sx={{ displayPrint: 'none' }} />
-            <Box
-              component="main"
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                flex: 1,
-                overflow: 'auto',
-              }}
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Breadcrumbs
+              size="sm"
+              aria-label="breadcrumbs"
+              separator={<ChevronRightRoundedIcon fontSize="small" />}
+              sx={{ pl: 0 }}
             >
-              <Outlet />
-            </Box>
+              <Link
+                underline="none"
+                color="neutral"
+                href="#some-link"
+                aria-label="Home"
+              >
+                <HomeRoundedIcon />
+              </Link>
+              <Link
+                underline="hover"
+                color="neutral"
+                href="#some-link"
+                sx={{ fontSize: 12, fontWeight: 500 }}
+              >
+                Dashboard
+              </Link>
+              <Typography
+                color="primary"
+                sx={{ fontWeight: 500, fontSize: 12 }}
+              >
+                Orders
+              </Typography>
+            </Breadcrumbs>
           </Box>
+          <Outlet />
         </Box>
       </Box>
-    </Box>
+    </CssVarsProvider>
   )
 }
