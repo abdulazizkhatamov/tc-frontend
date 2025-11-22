@@ -10,7 +10,7 @@ import z from 'zod'
 import Input from '@mui/joy/Input'
 import Typography from '@mui/joy/Typography'
 import FormHelperText from '@mui/joy/FormHelperText'
-import { useSessionLogin } from '@/shared/api/session.api'
+import { useSessionLogin } from '@/features/session/hooks/useSessionLogin'
 
 export const Route = createFileRoute('/(auth)/login')({
   component: RouteComponent,

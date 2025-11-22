@@ -1,20 +1,14 @@
 // features/session/session.slice.ts
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import type { SessionInterface } from '@/shared/schema/session.schema'
-import axiosInstance from '@/config/axios.config'
+import { getSession } from '../api/session.api'
+import type { SessionInterface } from '@/features/session/schema/session.schema'
 
 const initialState: SessionInterface = {
   session: null,
   isSessionReady: false,
 }
 
-export const fetchSession = createAsyncThunk(
-  'session/fetchSession',
-  async () => {
-    const res = await axiosInstance.get('/session')
-    return res.data as SessionInterface
-  },
-)
+export const fetchSession = createAsyncThunk('session/fetchSession', getSession)
 
 const sessionSlice = createSlice({
   name: 'session',

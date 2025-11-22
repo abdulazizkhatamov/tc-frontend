@@ -18,7 +18,7 @@ export const useSession = () => {
   return {
     session,
     isSessionReady,
-    fetchAdmin: () => dispatch(fetchSession()),
+    fetchSession: () => dispatch(fetchSession()),
     logout: () => dispatch(logout()),
   }
 }

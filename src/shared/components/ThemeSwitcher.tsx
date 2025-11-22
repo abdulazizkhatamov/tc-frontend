@@ -5,7 +5,7 @@ import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded'
 import LightModeIcon from '@mui/icons-material/LightMode'
 import type { IconButtonProps } from '@mui/joy/IconButton'
 
-export default function ColorSchemeToggle(props: IconButtonProps) {
+export default function ThemeSwitcher(props: IconButtonProps) {
   const { onClick, sx, ...other } = props
   const { mode, setMode } = useColorScheme()
   const [mounted, setMounted] = React.useState(false)

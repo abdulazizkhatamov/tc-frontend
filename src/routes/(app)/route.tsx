@@ -8,9 +8,16 @@ import Typography from '@mui/joy/Typography'
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded'
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded'
 
-import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
+import {
+  Outlet,
+  Link as RouterLink,
+  createFileRoute,
+  redirect,
+  useRouterState,
+} from '@tanstack/react-router'
 import Header from '@/shared/components/Header'
 import Sidebar from '@/shared/components/Sidebar'
+import { createBreadcrumbs } from '@/shared/utils/breadcrumb.utils'
 
 export const Route = createFileRoute('/(app)')({
   component: RouteComponent,
@@ -22,6 +29,9 @@ export const Route = createFileRoute('/(app)')({
 })
 
 function RouteComponent() {
+  const { location } = useRouterState()
+
+  const breadcrumbs = createBreadcrumbs(location.pathname)
   return (
     <CssVarsProvider disableTransitionOnChange>
       <CssBaseline />
@@ -47,6 +57,7 @@ function RouteComponent() {
             gap: 1,
           }}
         >
+          {/* Breadcrumbs */}
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Breadcrumbs
               size="sm"
@@ -54,28 +65,41 @@ function RouteComponent() {
               separator={<ChevronRightRoundedIcon fontSize="small" />}
               sx={{ pl: 0 }}
             >
+              {/* Home icon always links to /app */}
               <Link
                 underline="none"
                 color="neutral"
-                href="#some-link"
+                component={RouterLink}
+                to="/app"
                 aria-label="Home"
               >
                 <HomeRoundedIcon />
               </Link>
-              <Link
-                underline="hover"
-                color="neutral"
-                href="#some-link"
-                sx={{ fontSize: 12, fontWeight: 500 }}
-              >
-                Dashboard
-              </Link>
-              <Typography
-                color="primary"
-                sx={{ fontWeight: 500, fontSize: 12 }}
-              >
-                Orders
-              </Typography>
+
+              {breadcrumbs.map((crumb, index) => {
+                const isLast = index === breadcrumbs.length - 1
+
+                return isLast ? (
+                  <Typography
+                    key={crumb.to}
+                    color="primary"
+                    sx={{ fontWeight: 500, fontSize: 12 }}
+                  >
+                    {crumb.label}
+                  </Typography>
+                ) : (
+                  <Link
+                    key={crumb.to}
+                    underline="hover"
+                    color="neutral"
+                    component={RouterLink}
+                    to={crumb.to}
+                    sx={{ fontSize: 12, fontWeight: 500 }}
+                  >
+                    {crumb.label}
+                  </Link>
+                )
+              })}
             </Breadcrumbs>
           </Box>
           <Outlet />
