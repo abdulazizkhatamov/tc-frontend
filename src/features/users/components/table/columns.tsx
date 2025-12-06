@@ -6,7 +6,6 @@ import { TableRowActions } from './table-row-actions'
 import type { ColumnDef, RowData } from '@tanstack/react-table'
 import type { UsersType } from '../../data/schema'
 import { Badge } from '@/shared/components/ui/badge'
-import { Checkbox } from '@/shared/components/ui/checkbox'
 
 declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
@@ -16,30 +15,6 @@ declare module '@tanstack/react-table' {
 }
 
 export const columns: Array<ColumnDef<UsersType>> = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px] mx-auto"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px] mx-auto"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
   {
     accessorKey: 'name',
     header: ({ column }) => <TableColumnHeader column={column} title="Name" />,

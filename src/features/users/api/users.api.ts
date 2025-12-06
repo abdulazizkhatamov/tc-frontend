@@ -6,6 +6,8 @@ import {
   DEFAULT_PAGE_SIZE,
 } from '@/shared/consts/pagination.const'
 
+export class UserNotFoundError extends Error {}
+
 /* ============================================================
    🔹 GET - /users
    ------------------------------------------------------------ */
@@ -39,6 +41,14 @@ export async function getUsers(
 }
 
 /* ============================================================
+   🔹 GET - /users/${id}
+   ------------------------------------------------------------ */
+export async function getUser(id: string): Promise<UsersType> {
+  const response = await axiosInstance.get<UsersType>(`/users/${id}`)
+  return response.data
+}
+
+/* ============================================================
    🔹 POST - /users
    ------------------------------------------------------------ */
 interface PostUsersPayload {
@@ -54,5 +64,27 @@ export async function postUsers(
   userData: PostUsersPayload,
 ): Promise<UsersType> {
   const response = await axiosInstance.post<UsersType>('/users', userData)
+  return response.data
+}
+
+/* ============================================================
+   🔹 PATCH - /users/${id}
+   ------------------------------------------------------------ */
+export interface PatchUsersPayload {
+  id: string
+  name?: string
+  email?: string
+  phone?: string
+  roles?: Array<'ADMIN' | 'STAFF' | 'INSTRUCTOR'>
+  status?: boolean
+}
+
+export async function patchUser(
+  userData: PatchUsersPayload,
+): Promise<UsersType> {
+  const response = await axiosInstance.patch<UsersType>(
+    `/users/${userData.id}`,
+    userData,
+  )
   return response.data
 }

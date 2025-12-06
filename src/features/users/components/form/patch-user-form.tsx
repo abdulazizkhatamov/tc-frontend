@@ -1,12 +1,14 @@
-import z from 'zod'
+import React from 'react'
+import { z } from 'zod'
 import { useForm } from '@tanstack/react-form'
 import { IconCheck, IconPlus } from '@tabler/icons-react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { toast } from 'sonner'
-import { useNavigate } from '@tanstack/react-router'
-import { postUsers } from '../../api/users.api'
-import { Button } from '@/shared/components/ui/button'
+import { useMutation } from '@tanstack/react-query'
+import { toast } from 'sonner' // Define the type for props (if any)
+import type { UsersType } from '@/features/users/data/schema.ts'
+import type { PatchUsersPayload } from '@/features/users/api/users.api.ts'
+import { patchUser } from '@/features/users/api/users.api.ts'
 import {
+  Field,
   FieldDescription,
   FieldError,
   FieldGroup,
@@ -14,16 +16,15 @@ import {
   FieldLegend,
   FieldSeparator,
   FieldSet,
-  Field as ShadcnField,
-} from '@/shared/components/ui/field'
-import { Input } from '@/shared/components/ui/input'
-import { Switch } from '@/shared/components/ui/switch'
-import { Badge } from '@/shared/components/ui/badge'
+} from '@/shared/components/ui/field.tsx'
+import { Input } from '@/shared/components/ui/input.tsx'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/shared/components/ui/popover'
+} from '@/shared/components/ui/popover.tsx'
+import { Button } from '@/shared/components/ui/button.tsx'
+import { Badge } from '@/shared/components/ui/badge.tsx'
 import {
   Command,
   CommandEmpty,
@@ -32,18 +33,22 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from '@/shared/components/ui/command'
-import { cn } from '@/shared/lib/utils'
-import { getAxiosErrorMessage } from '@/shared/utils/axios.utils'
+} from '@/shared/components/ui/command.tsx'
+import { cn } from '@/shared/lib/utils.ts'
+import { Switch } from '@/shared/components/ui/switch.tsx'
 import { roleOptions } from '@/features/users/data/roles.ts'
+import { getAxiosErrorMessage } from '@/shared/utils/axios.utils.ts'
+import { Spinner } from '@/shared/components/ui/spinner.tsx' // Define the type for props (if any)
 
-const createUserSchema = z.object({
-  name: z.string().min(1, 'Enter a valid name'),
+// Define the type for props (if any)
+interface IProps {
+  user: UsersType
+}
+
+const patchUserSchema = z.object({
+  id: z.string(),
+  name: z.string('Enter a valid name'),
   email: z.email('Enter a valid email'),
-  password: z
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .max(50, 'Password must be less than 50 characters'),
   phone: z.string().or(z.literal('')),
   roles: z
     .array(z.enum(['ADMIN', 'STAFF', 'INSTRUCTOR']))
@@ -51,14 +56,12 @@ const createUserSchema = z.object({
   status: z.boolean(),
 })
 
-export default function CreateUserForm() {
-  const navigate = useNavigate()
-  const queryClient = useQueryClient()
-  const { mutate: createUser } = useMutation({
-    mutationFn: postUsers,
-    onSuccess: async (response) => {
-      await queryClient.invalidateQueries({ queryKey: ['users'] })
-      await navigate({ to: `/users/${response.id}` })
+// Functional component using TypeScript
+const PatchUserForm: React.FC<IProps> = ({ user }) => {
+  const { mutate: mutatePatchUser, isPending } = useMutation({
+    mutationFn: patchUser,
+    onSuccess: (response) => {
+      console.log(response)
     },
     onError: (error) => {
       const message = getAxiosErrorMessage(error)
@@ -68,18 +71,29 @@ export default function CreateUserForm() {
     },
   })
 
-  const { Field, handleSubmit } = useForm({
+  const form = useForm({
     defaultValues: {
-      name: '',
-      email: '',
-      password: '',
-      phone: '',
-      roles: [] as Array<'ADMIN' | 'STAFF' | 'INSTRUCTOR'>,
-      status: true,
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone ?? '',
+      roles: user.roles,
+      status: user.status,
     },
-    validators: { onSubmit: createUserSchema },
+    validators: {
+      onSubmit: patchUserSchema,
+    },
     onSubmit: ({ value }) => {
-      createUser(value)
+      const updatedFields: PatchUsersPayload = { id: user.id }
+
+      Object.keys(value).forEach((key) => {
+        const k = key as keyof PatchUsersPayload
+        if (value[k] !== user[k]) {
+          updatedFields[k] = value[k]
+        }
+      })
+
+      mutatePatchUser(updatedFields)
     },
   })
 
@@ -87,19 +101,19 @@ export default function CreateUserForm() {
     <form
       onSubmit={(e) => {
         e.preventDefault()
-        handleSubmit()
+        form.handleSubmit()
       }}
     >
       <FieldGroup>
         <FieldSet>
-          <FieldLegend>Create New User</FieldLegend>
+          <FieldLegend>Update User Data</FieldLegend>
           <FieldDescription>
-            Fill in the details to add a new user
+            Fill in the details to update a existing user
           </FieldDescription>
 
-          <Field name="name">
+          <form.Field name="name">
             {({ state, handleChange, handleBlur }) => (
-              <ShadcnField data-invalid={!state.meta.isValid}>
+              <Field data-invalid={!state.meta.isValid}>
                 <FieldLabel htmlFor="name">Name</FieldLabel>
                 <Input
                   id="name"
@@ -110,13 +124,13 @@ export default function CreateUserForm() {
                   aria-invalid={!state.meta.isValid}
                 />
                 <FieldError errors={state.meta.errors} />
-              </ShadcnField>
+              </Field>
             )}
-          </Field>
+          </form.Field>
 
-          <Field name="email">
+          <form.Field name="email">
             {({ state, handleChange, handleBlur }) => (
-              <ShadcnField data-invalid={!state.meta.isValid}>
+              <Field data-invalid={!state.meta.isValid}>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input
                   id="email"
@@ -128,31 +142,13 @@ export default function CreateUserForm() {
                   aria-invalid={!state.meta.isValid}
                 />
                 <FieldError errors={state.meta.errors} />
-              </ShadcnField>
+              </Field>
             )}
-          </Field>
+          </form.Field>
 
-          <Field name="password">
+          <form.Field name="phone">
             {({ state, handleChange, handleBlur }) => (
-              <ShadcnField data-invalid={!state.meta.isValid}>
-                <FieldLabel htmlFor="password">Password</FieldLabel>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="**********"
-                  value={state.value}
-                  onChange={(e) => handleChange(e.target.value)}
-                  onBlur={handleBlur}
-                  aria-invalid={!state.meta.isValid}
-                />
-                <FieldError errors={state.meta.errors} />
-              </ShadcnField>
-            )}
-          </Field>
-
-          <Field name="phone">
-            {({ state, handleChange, handleBlur }) => (
-              <ShadcnField data-invalid={!state.meta.isValid}>
+              <Field data-invalid={!state.meta.isValid}>
                 <FieldLabel htmlFor="phone">Phone (optional)</FieldLabel>
                 <Input
                   id="phone"
@@ -163,16 +159,16 @@ export default function CreateUserForm() {
                   aria-invalid={!state.meta.isValid}
                 />
                 <FieldError errors={state.meta.errors} />
-              </ShadcnField>
+              </Field>
             )}
-          </Field>
+          </form.Field>
 
-          <Field name="roles">
+          <form.Field name="roles">
             {({ state, handleChange }) => {
               const selectedValues = new Set(state.value)
 
               return (
-                <ShadcnField data-invalid={!state.meta.isValid}>
+                <Field data-invalid={!state.meta.isValid}>
                   <FieldLabel>Roles</FieldLabel>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -264,30 +260,34 @@ export default function CreateUserForm() {
                     </PopoverContent>
                   </Popover>
                   <FieldError errors={state.meta.errors} />
-                </ShadcnField>
+                </Field>
               )
             }}
-          </Field>
+          </form.Field>
 
-          <Field name="status">
+          <form.Field name="status">
             {({ state, handleChange }) => (
-              <ShadcnField orientation={'horizontal'}>
+              <Field orientation={'horizontal'}>
                 <FieldLabel>Status</FieldLabel>
                 <Switch
                   checked={state.value}
                   onCheckedChange={(val) => handleChange(val)}
                 />
-              </ShadcnField>
+              </Field>
             )}
-          </Field>
+          </form.Field>
         </FieldSet>
 
         <FieldSeparator />
 
-        <ShadcnField orientation="vertical">
-          <Button type="submit">Create User</Button>
-        </ShadcnField>
+        <Field orientation="vertical">
+          <Button type="submit" disabled={isPending}>
+            {isPending ? <Spinner /> : 'Update User'}
+          </Button>
+        </Field>
       </FieldGroup>
     </form>
   )
 }
+
+export default PatchUserForm

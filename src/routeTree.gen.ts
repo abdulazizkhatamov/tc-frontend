@@ -15,7 +15,8 @@ import { Route as appIndexRouteImport } from './routes/(app)/index'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
 import { Route as appUsersIndexRouteImport } from './routes/(app)/users/index'
 import { Route as appUsersCreateRouteImport } from './routes/(app)/users/create'
-import { Route as appUsersIdRouteImport } from './routes/(app)/users/$id'
+import { Route as appUsersIdIndexRouteImport } from './routes/(app)/users/$id/index'
+import { Route as appUsersIdEditRouteImport } from './routes/(app)/users/$id/edit'
 
 const authRouteRoute = authRouteRouteImport.update({
   id: '/(auth)',
@@ -45,25 +46,32 @@ const appUsersCreateRoute = appUsersCreateRouteImport.update({
   path: '/users/create',
   getParentRoute: () => appRouteRoute,
 } as any)
-const appUsersIdRoute = appUsersIdRouteImport.update({
-  id: '/users/$id',
-  path: '/users/$id',
+const appUsersIdIndexRoute = appUsersIdIndexRouteImport.update({
+  id: '/users/$id/',
+  path: '/users/$id/',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appUsersIdEditRoute = appUsersIdEditRouteImport.update({
+  id: '/users/$id/edit',
+  path: '/users/$id/edit',
   getParentRoute: () => appRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/login': typeof authLoginRoute
   '/': typeof appIndexRoute
-  '/users/$id': typeof appUsersIdRoute
   '/users/create': typeof appUsersCreateRoute
   '/users': typeof appUsersIndexRoute
+  '/users/$id/edit': typeof appUsersIdEditRoute
+  '/users/$id': typeof appUsersIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof authLoginRoute
   '/': typeof appIndexRoute
-  '/users/$id': typeof appUsersIdRoute
   '/users/create': typeof appUsersCreateRoute
   '/users': typeof appUsersIndexRoute
+  '/users/$id/edit': typeof appUsersIdEditRoute
+  '/users/$id': typeof appUsersIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,24 +79,38 @@ export interface FileRoutesById {
   '/(auth)': typeof authRouteRouteWithChildren
   '/(auth)/login': typeof authLoginRoute
   '/(app)/': typeof appIndexRoute
-  '/(app)/users/$id': typeof appUsersIdRoute
   '/(app)/users/create': typeof appUsersCreateRoute
   '/(app)/users/': typeof appUsersIndexRoute
+  '/(app)/users/$id/edit': typeof appUsersIdEditRoute
+  '/(app)/users/$id/': typeof appUsersIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/login' | '/' | '/users/$id' | '/users/create' | '/users'
+  fullPaths:
+    | '/login'
+    | '/'
+    | '/users/create'
+    | '/users'
+    | '/users/$id/edit'
+    | '/users/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/' | '/users/$id' | '/users/create' | '/users'
+  to:
+    | '/login'
+    | '/'
+    | '/users/create'
+    | '/users'
+    | '/users/$id/edit'
+    | '/users/$id'
   id:
     | '__root__'
     | '/(app)'
     | '/(auth)'
     | '/(auth)/login'
     | '/(app)/'
-    | '/(app)/users/$id'
     | '/(app)/users/create'
     | '/(app)/users/'
+    | '/(app)/users/$id/edit'
+    | '/(app)/users/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -140,11 +162,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appUsersCreateRouteImport
       parentRoute: typeof appRouteRoute
     }
-    '/(app)/users/$id': {
-      id: '/(app)/users/$id'
+    '/(app)/users/$id/': {
+      id: '/(app)/users/$id/'
       path: '/users/$id'
       fullPath: '/users/$id'
-      preLoaderRoute: typeof appUsersIdRouteImport
+      preLoaderRoute: typeof appUsersIdIndexRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/users/$id/edit': {
+      id: '/(app)/users/$id/edit'
+      path: '/users/$id/edit'
+      fullPath: '/users/$id/edit'
+      preLoaderRoute: typeof appUsersIdEditRouteImport
       parentRoute: typeof appRouteRoute
     }
   }
@@ -152,16 +181,18 @@ declare module '@tanstack/react-router' {
 
 interface appRouteRouteChildren {
   appIndexRoute: typeof appIndexRoute
-  appUsersIdRoute: typeof appUsersIdRoute
   appUsersCreateRoute: typeof appUsersCreateRoute
   appUsersIndexRoute: typeof appUsersIndexRoute
+  appUsersIdEditRoute: typeof appUsersIdEditRoute
+  appUsersIdIndexRoute: typeof appUsersIdIndexRoute
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
   appIndexRoute: appIndexRoute,
-  appUsersIdRoute: appUsersIdRoute,
   appUsersCreateRoute: appUsersCreateRoute,
   appUsersIndexRoute: appUsersIndexRoute,
+  appUsersIdEditRoute: appUsersIdEditRoute,
+  appUsersIdIndexRoute: appUsersIdIndexRoute,
 }
 
 const appRouteRouteWithChildren = appRouteRoute._addFileChildren(

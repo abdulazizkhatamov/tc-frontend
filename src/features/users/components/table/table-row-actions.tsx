@@ -1,5 +1,6 @@
 import { IconDots } from '@tabler/icons-react'
 
+import { Link } from '@tanstack/react-router'
 import { userSchema } from '../../data/schema'
 import type { Row } from '@tanstack/react-table'
 import { Button } from '@/shared/components/ui/button'
@@ -17,7 +18,7 @@ interface TableRowActionsProps<TData> {
 }
 
 export function TableRowActions<TData>({ row }: TableRowActionsProps<TData>) {
-  const task = userSchema.parse(row.original)
+  const user = userSchema.parse(row.original)
 
   return (
     <DropdownMenu>
@@ -31,9 +32,9 @@ export function TableRowActions<TData>({ row }: TableRowActionsProps<TData>) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
-        <DropdownMenuItem>Edit</DropdownMenuItem>
-        <DropdownMenuItem>Make a copy</DropdownMenuItem>
-        <DropdownMenuItem>Favorite</DropdownMenuItem>
+        <Link to={'/users/$id/edit'} params={{ id: user.id }}>
+          <DropdownMenuItem>Edit</DropdownMenuItem>
+        </Link>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           Delete
