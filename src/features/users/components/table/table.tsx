@@ -1,4 +1,11 @@
 import * as React from 'react'
+import {
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
+import { TableToolbar } from './table-toolbar'
+import { TablePagination } from './table-pagination'
 import type {
   ColumnDef,
   OnChangeFn,
@@ -7,13 +14,6 @@ import type {
   SortingState,
   VisibilityState,
 } from '@tanstack/react-table'
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from '@tanstack/react-table'
-import { TableToolbar } from './table-toolbar'
-import { TablePagination } from './table-pagination'
 import type { Filters } from '@/shared/types/api.type'
 import {
   Table,
