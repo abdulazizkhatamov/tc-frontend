@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
+import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
 import { AppSidebar } from '@/shared/components/sidebar/sidebar'
 import { SiteHeader } from '@/shared/components/sidebar/site-header'
 import { SidebarInset, SidebarProvider } from '@/shared/components/ui/sidebar'
