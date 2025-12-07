@@ -74,7 +74,7 @@ export interface PatchUsersPayload {
   id: string
   name?: string
   email?: string
-  phone?: string
+  phone?: string | null
   roles?: Array<'ADMIN' | 'STAFF' | 'INSTRUCTOR'>
   status?: boolean
 }

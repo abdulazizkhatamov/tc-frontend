@@ -60,8 +60,8 @@ const patchUserSchema = z.object({
 const PatchUserForm: React.FC<IProps> = ({ user }) => {
   const { mutate: mutatePatchUser, isPending } = useMutation({
     mutationFn: patchUser,
-    onSuccess: (response) => {
-      console.log(response)
+    onSuccess: () => {
+      toast.info('Successfully updated user', { position: 'top-center' })
     },
     onError: (error) => {
       const message = getAxiosErrorMessage(error)
@@ -86,12 +86,41 @@ const PatchUserForm: React.FC<IProps> = ({ user }) => {
     onSubmit: ({ value }) => {
       const updatedFields: PatchUsersPayload = { id: user.id }
 
-      Object.keys(value).forEach((key) => {
-        const k = key as keyof PatchUsersPayload
-        if (value[k] !== user[k]) {
-          updatedFields[k] = value[k]
-        }
-      })
+      const normalizePhone = (p: string | undefined | null) =>
+        p === '' ? null : p
+
+      // --- name ---
+      if (value.name !== user.name) {
+        updatedFields.name = value.name
+      }
+
+      // --- email ---
+      if (value.email !== user.email) {
+        updatedFields.email = value.email
+      }
+
+      // --- phone ('' -> null) ---
+      const nextPhone = normalizePhone(value.phone)
+      const prevPhone = normalizePhone(user.phone)
+
+      if (nextPhone !== prevPhone) {
+        // if nextPhone is null, omit undefined and explicitly set null
+        updatedFields.phone = nextPhone === null ? null : nextPhone
+      }
+
+      // --- roles (deep equality using set-like comparison) ---
+      const rolesEqual =
+        value.roles.length === user.roles.length &&
+        value.roles.every((r) => user.roles.includes(r))
+
+      if (!rolesEqual) {
+        updatedFields.roles = value.roles
+      }
+
+      // --- status (boolean compare) ---
+      if (value.status !== user.status) {
+        updatedFields.status = value.status
+      }
 
       mutatePatchUser(updatedFields)
     },
