@@ -1,7 +1,7 @@
 // features/session/session.slice.ts
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { getSession } from '../api/session.api'
-import type { SessionInterface } from '@/features/session/schema/session.schema'
+import type { SessionInterface } from '@/features/session/data/session.schema.ts'
 
 const initialState: SessionInterface = {
   session: null,

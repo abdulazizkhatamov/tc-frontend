@@ -1,4 +1,4 @@
-import type { SessionInterface } from '@/features/session/schema/session.schema'
+import type { SessionInterface } from '@/features/session/data/session.schema.ts'
 import axiosInstance from '@/config/axios.config'
 
 // INTERFACES
@@ -19,6 +19,14 @@ export const getSession = async () => {
    🔹 POST - /session/login
    ------------------------------------------------------------ */
 export const postSessionLogin = async (payload: SessionLoginPayload) => {
-  const { data } = await axiosInstance.post('/session/login', payload)
-  return data
+  const response = await axiosInstance.post('/session/login', payload)
+  return response.data
+}
+
+/* ============================================================
+   🔹 POST - /session/logout
+   ------------------------------------------------------------ */
+export const postSessionLogout = async () => {
+  const response = await axiosInstance.post('/session/logout')
+  return response.data
 }

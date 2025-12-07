@@ -23,11 +23,6 @@ import {
 } from '@/shared/components/ui/sidebar'
 
 const data = {
-  user: {
-    name: 'shadcn',
-    email: 'm@example.com',
-    avatar: '/avatars/shadcn.jpg',
-  },
   navMain: [
     {
       title: 'Dashboard',
@@ -85,7 +80,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarNavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <SidebarNavUser user={data.user} />
+        <SidebarNavUser />
       </SidebarFooter>
     </Sidebar>
   )
