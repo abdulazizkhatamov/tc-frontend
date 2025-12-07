@@ -1,6 +1,8 @@
 import z from 'zod'
 
 import { useForm } from '@tanstack/react-form'
+import { useMutation } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import { Button } from '@/shared/components/ui/button'
 import {
   FieldError,
@@ -9,8 +11,9 @@ import {
   Field as ShadcnField,
 } from '@/shared/components/ui/field'
 import { Input } from '@/shared/components/ui/input'
-import { useSessionLogin } from '@/features/session/hooks/useSessionLogin'
 import { Spinner } from '@/shared/components/ui/spinner'
+import { postSessionLogin } from '@/features/session/api/session.api.ts'
+import { getAxiosErrorMessage } from '@/shared/utils/axios.utils.ts'
 
 export const loginSchema = z.object({
   email: z.email('Enter a valid email'),
@@ -21,7 +24,19 @@ export const loginSchema = z.object({
 })
 
 export function LoginForm() {
-  const { mutate: login, isPending } = useSessionLogin()
+  const { mutate: login, isPending } = useMutation({
+    mutationFn: postSessionLogin,
+    onSuccess: () => {
+      window.location.href = '/'
+    },
+    onError: (error) => {
+      const message = getAxiosErrorMessage(error)
+      toast.error(message, {
+        position: 'top-center',
+      })
+    },
+  })
+
   const { Field, handleSubmit } = useForm({
     defaultValues: { email: '', password: '' },
     onSubmit: ({ value }) => {

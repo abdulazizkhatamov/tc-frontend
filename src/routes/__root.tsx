@@ -3,7 +3,7 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import type { QueryClient } from '@tanstack/react-query'
-import type { useSession } from '@/features/session/hooks/useSession'
+import type { useSession } from '@/features/session/hooks/use-session.ts'
 
 interface MyRouterContext {
   queryClient: QueryClient

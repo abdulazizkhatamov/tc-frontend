@@ -33,11 +33,13 @@ const data = {
       title: 'Dashboard',
       url: '/',
       icon: IconDashboard,
+      roles: ['ADMIN', 'STAFF', 'INSTRUCTOR'],
     },
     {
       title: 'Users',
       url: '/users',
       icon: IconUsers,
+      roles: ['ADMIN'],
     },
   ],
   navSecondary: [

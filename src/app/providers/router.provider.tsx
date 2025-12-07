@@ -2,7 +2,7 @@
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { routeTree } from '@/routeTree.gen'
 import { getContext } from '@/app/providers/query.provider'
-import { useSession } from '@/features/session/hooks/useSession'
+import { useSession } from '@/features/session/hooks/use-session.ts'
 import { LoadingSpinner } from '@/shared/components/loading-backdrop'
 
 // Single context shared across router + providers

@@ -8,8 +8,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/shared/components/ui/dropdown-menu'
 
@@ -35,11 +33,6 @@ export function TableRowActions<TData>({ row }: TableRowActionsProps<TData>) {
         <Link to={'/users/$id/edit'} params={{ id: user.id }}>
           <DropdownMenuItem>Edit</DropdownMenuItem>
         </Link>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          Delete
-          <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

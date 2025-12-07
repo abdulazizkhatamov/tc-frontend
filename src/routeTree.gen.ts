@@ -13,6 +13,7 @@ import { Route as authRouteRouteImport } from './routes/(auth)/route'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as appIndexRouteImport } from './routes/(app)/index'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
+import { Route as app403RouteImport } from './routes/(app)/403'
 import { Route as appUsersIndexRouteImport } from './routes/(app)/users/index'
 import { Route as appUsersCreateRouteImport } from './routes/(app)/users/create'
 import { Route as appUsersIdIndexRouteImport } from './routes/(app)/users/$id/index'
@@ -36,6 +37,11 @@ const authLoginRoute = authLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => authRouteRoute,
 } as any)
+const app403Route = app403RouteImport.update({
+  id: '/403',
+  path: '/403',
+  getParentRoute: () => appRouteRoute,
+} as any)
 const appUsersIndexRoute = appUsersIndexRouteImport.update({
   id: '/users/',
   path: '/users/',
@@ -58,6 +64,7 @@ const appUsersIdEditRoute = appUsersIdEditRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/403': typeof app403Route
   '/login': typeof authLoginRoute
   '/': typeof appIndexRoute
   '/users/create': typeof appUsersCreateRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByFullPath {
   '/users/$id': typeof appUsersIdIndexRoute
 }
 export interface FileRoutesByTo {
+  '/403': typeof app403Route
   '/login': typeof authLoginRoute
   '/': typeof appIndexRoute
   '/users/create': typeof appUsersCreateRoute
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/(app)': typeof appRouteRouteWithChildren
   '/(auth)': typeof authRouteRouteWithChildren
+  '/(app)/403': typeof app403Route
   '/(auth)/login': typeof authLoginRoute
   '/(app)/': typeof appIndexRoute
   '/(app)/users/create': typeof appUsersCreateRoute
@@ -87,6 +96,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/403'
     | '/login'
     | '/'
     | '/users/create'
@@ -95,6 +105,7 @@ export interface FileRouteTypes {
     | '/users/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/403'
     | '/login'
     | '/'
     | '/users/create'
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/(app)'
     | '/(auth)'
+    | '/(app)/403'
     | '/(auth)/login'
     | '/(app)/'
     | '/(app)/users/create'
@@ -148,6 +160,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authLoginRouteImport
       parentRoute: typeof authRouteRoute
     }
+    '/(app)/403': {
+      id: '/(app)/403'
+      path: '/403'
+      fullPath: '/403'
+      preLoaderRoute: typeof app403RouteImport
+      parentRoute: typeof appRouteRoute
+    }
     '/(app)/users/': {
       id: '/(app)/users/'
       path: '/users'
@@ -180,6 +199,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface appRouteRouteChildren {
+  app403Route: typeof app403Route
   appIndexRoute: typeof appIndexRoute
   appUsersCreateRoute: typeof appUsersCreateRoute
   appUsersIndexRoute: typeof appUsersIndexRoute
@@ -188,6 +208,7 @@ interface appRouteRouteChildren {
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
+  app403Route: app403Route,
   appIndexRoute: appIndexRoute,
   appUsersCreateRoute: appUsersCreateRoute,
   appUsersIndexRoute: appUsersIndexRoute,

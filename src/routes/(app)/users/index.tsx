@@ -11,14 +11,18 @@ import {
   DEFAULT_PAGE_INDEX,
   DEFAULT_PAGE_SIZE,
 } from '@/shared/consts/pagination.const'
+import { requireRole } from '@/shared/utils/router.utils.ts'
 
 export const Route = createFileRoute('/(app)/users/')({
   component: RouteComponent,
   validateSearch: () => ({}) as UsersFiltersType,
+  beforeLoad: ({ context }) => {
+    requireRole(context.session.session?.roles ?? [], ['ADMIN'])
+  },
 })
 
 function RouteComponent() {
-  const { filters, resetFilters, setFilters } = useFilters(Route.id)
+  const { filters, setFilters } = useFilters(Route.id)
 
   const { data, isLoading } = useQuery({
     queryKey: ['users', filters],
