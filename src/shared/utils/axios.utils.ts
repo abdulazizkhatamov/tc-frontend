@@ -3,12 +3,22 @@ import type { AxiosError } from 'axios'
 
 /**
  * Extracts a human-readable error message from an Axios error object.
- * @param error - Unknown error thrown from an Axios call
- * @returns A string message (default fallback included)
+ * Handles both string and string[] message formats.
  */
 export const getAxiosErrorMessage = (error: unknown): string => {
   if (isAxiosErrorWithMessage(error)) {
-    return error.response?.data.message || 'An unknown error occurred'
+    const msg = error.response?.data.message
+
+    if (Array.isArray(msg)) {
+      // Return each message on a new line
+      return msg.join('\n')
+    }
+
+    if (typeof msg === 'string') {
+      return msg
+    }
+
+    return 'An unknown error occurred'
   }
 
   if (error instanceof Error) {
@@ -23,7 +33,7 @@ export const getAxiosErrorMessage = (error: unknown): string => {
  */
 const isAxiosErrorWithMessage = (
   error: unknown,
-): error is AxiosError<{ message: string }> => {
+): error is AxiosError<{ message: string | Array<string> }> => {
   return (
     typeof error === 'object' &&
     error !== null &&

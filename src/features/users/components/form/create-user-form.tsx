@@ -1,12 +1,12 @@
 import z from 'zod'
 import { useForm } from '@tanstack/react-form'
-import { IconCheck, IconPlus } from '@tabler/icons-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useNavigate } from '@tanstack/react-router'
 import { postUsers } from '../../api/users.api'
 import { Button } from '@/shared/components/ui/button'
 import {
+  Field,
   FieldDescription,
   FieldError,
   FieldGroup,
@@ -14,27 +14,12 @@ import {
   FieldLegend,
   FieldSeparator,
   FieldSet,
-  Field as ShadcnField,
 } from '@/shared/components/ui/field'
 import { Input } from '@/shared/components/ui/input'
 import { Switch } from '@/shared/components/ui/switch'
-import { Badge } from '@/shared/components/ui/badge'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/shared/components/ui/popover'
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-} from '@/shared/components/ui/command'
-import { cn } from '@/shared/lib/utils'
 import { getAxiosErrorMessage } from '@/shared/utils/axios.utils'
+import { Spinner } from '@/shared/components/ui/spinner.tsx'
+import { DebouncedSelect } from '@/shared/components/ui/debounced-select.tsx'
 import { roleOptions } from '@/features/users/data/roles.ts'
 
 const createUserSchema = z.object({
@@ -45,36 +30,35 @@ const createUserSchema = z.object({
     .min(8, 'Password must be at least 8 characters')
     .max(50, 'Password must be less than 50 characters'),
   phone: z.string().or(z.literal('')),
-  roles: z
-    .array(z.enum(['ADMIN', 'STAFF', 'INSTRUCTOR']))
-    .min(1, 'At least one role must be assigned'),
+  roles: z.array(z.string()).min(1, 'At least one role must be assigned'),
   status: z.boolean(),
 })
 
 export default function CreateUserForm() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const { mutate: createUser } = useMutation({
+  const { mutate: createUser, isPending } = useMutation({
     mutationFn: postUsers,
     onSuccess: async (response) => {
       await queryClient.invalidateQueries({ queryKey: ['users'] })
       await navigate({ to: `/users/${response.id}` })
     },
     onError: (error) => {
-      const message = getAxiosErrorMessage(error)
-      toast.error(message, {
+      const msg = getAxiosErrorMessage(error)
+
+      toast.error(<div style={{ whiteSpace: 'pre-line' }}>{msg}</div>, {
         position: 'top-center',
       })
     },
   })
 
-  const { Field, handleSubmit } = useForm({
+  const form = useForm({
     defaultValues: {
       name: '',
       email: '',
       password: '',
       phone: '',
-      roles: [] as Array<'ADMIN' | 'STAFF' | 'INSTRUCTOR'>,
+      roles: [] as Array<string>,
       status: true,
     },
     validators: { onSubmit: createUserSchema },
@@ -87,7 +71,7 @@ export default function CreateUserForm() {
     <form
       onSubmit={(e) => {
         e.preventDefault()
-        handleSubmit()
+        form.handleSubmit()
       }}
     >
       <FieldGroup>
@@ -97,9 +81,9 @@ export default function CreateUserForm() {
             Fill in the details to add a new user
           </FieldDescription>
 
-          <Field name="name">
+          <form.Field name="name">
             {({ state, handleChange, handleBlur }) => (
-              <ShadcnField data-invalid={!state.meta.isValid}>
+              <Field data-invalid={!state.meta.isValid}>
                 <FieldLabel htmlFor="name">Name</FieldLabel>
                 <Input
                   id="name"
@@ -110,13 +94,13 @@ export default function CreateUserForm() {
                   aria-invalid={!state.meta.isValid}
                 />
                 <FieldError errors={state.meta.errors} />
-              </ShadcnField>
+              </Field>
             )}
-          </Field>
+          </form.Field>
 
-          <Field name="email">
+          <form.Field name="email">
             {({ state, handleChange, handleBlur }) => (
-              <ShadcnField data-invalid={!state.meta.isValid}>
+              <Field data-invalid={!state.meta.isValid}>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input
                   id="email"
@@ -128,13 +112,13 @@ export default function CreateUserForm() {
                   aria-invalid={!state.meta.isValid}
                 />
                 <FieldError errors={state.meta.errors} />
-              </ShadcnField>
+              </Field>
             )}
-          </Field>
+          </form.Field>
 
-          <Field name="password">
+          <form.Field name="password">
             {({ state, handleChange, handleBlur }) => (
-              <ShadcnField data-invalid={!state.meta.isValid}>
+              <Field data-invalid={!state.meta.isValid}>
                 <FieldLabel htmlFor="password">Password</FieldLabel>
                 <Input
                   id="password"
@@ -146,13 +130,13 @@ export default function CreateUserForm() {
                   aria-invalid={!state.meta.isValid}
                 />
                 <FieldError errors={state.meta.errors} />
-              </ShadcnField>
+              </Field>
             )}
-          </Field>
+          </form.Field>
 
-          <Field name="phone">
+          <form.Field name="phone">
             {({ state, handleChange, handleBlur }) => (
-              <ShadcnField data-invalid={!state.meta.isValid}>
+              <Field data-invalid={!state.meta.isValid}>
                 <FieldLabel htmlFor="phone">Phone (optional)</FieldLabel>
                 <Input
                   id="phone"
@@ -163,130 +147,49 @@ export default function CreateUserForm() {
                   aria-invalid={!state.meta.isValid}
                 />
                 <FieldError errors={state.meta.errors} />
-              </ShadcnField>
+              </Field>
             )}
-          </Field>
+          </form.Field>
 
-          <Field name="roles">
-            {({ state, handleChange }) => {
-              const selectedValues = new Set(state.value)
-
-              return (
-                <ShadcnField data-invalid={!state.meta.isValid}>
-                  <FieldLabel>Roles</FieldLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 border-dashed"
-                      >
-                        <IconPlus />
-                        Select Roles
-                        {selectedValues.size > 0 && (
-                          <>
-                            <div className="hidden space-x-1 lg:flex">
-                              {selectedValues.size > 2 ? (
-                                <Badge variant="secondary">
-                                  {selectedValues.size} selected
-                                </Badge>
-                              ) : (
-                                roleOptions
-                                  .filter((option) =>
-                                    selectedValues.has(option.value),
-                                  )
-                                  .map((option) => (
-                                    <Badge
-                                      key={option.value}
-                                      variant="secondary"
-                                    >
-                                      {option.label}
-                                    </Badge>
-                                  ))
-                              )}
-                            </div>
-                          </>
-                        )}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0" align="start">
-                      <Command>
-                        <CommandInput placeholder="Search roles..." />
-                        <CommandList>
-                          <CommandEmpty>No results found.</CommandEmpty>
-                          <CommandGroup>
-                            {roleOptions.map((option) => {
-                              const isSelected = selectedValues.has(
-                                option.value,
-                              )
-                              return (
-                                <CommandItem
-                                  key={option.value}
-                                  onSelect={() => {
-                                    if (isSelected) {
-                                      selectedValues.delete(option.value)
-                                    } else {
-                                      selectedValues.add(option.value)
-                                    }
-                                    handleChange(Array.from(selectedValues))
-                                  }}
-                                >
-                                  <div
-                                    className={cn(
-                                      'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
-                                      isSelected
-                                        ? 'bg-primary text-primary-foreground'
-                                        : 'opacity-50 [&_svg]:invisible',
-                                    )}
-                                  >
-                                    <IconCheck />
-                                  </div>
-                                  <span>{option.label}</span>
-                                </CommandItem>
-                              )
-                            })}
-                          </CommandGroup>
-                          {selectedValues.size > 0 && (
-                            <>
-                              <CommandSeparator />
-                              <CommandGroup>
-                                <CommandItem
-                                  onSelect={() => handleChange([])}
-                                  className="justify-center text-center"
-                                >
-                                  Clear selections
-                                </CommandItem>
-                              </CommandGroup>
-                            </>
-                          )}
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <FieldError errors={state.meta.errors} />
-                </ShadcnField>
-              )
-            }}
-          </Field>
-
-          <Field name="status">
+          <form.Field name="roles">
             {({ state, handleChange }) => (
-              <ShadcnField orientation={'horizontal'}>
+              <Field data-invalid={!state.meta.isValid}>
+                <FieldLabel>Roles</FieldLabel>
+
+                <DebouncedSelect
+                  value={state.value}
+                  onChange={(value) => handleChange(value as Array<string>)}
+                  options={roleOptions}
+                  multiple
+                  debounceSearch
+                  placeholder="Select Roles"
+                />
+
+                <FieldError errors={state.meta.errors} />
+              </Field>
+            )}
+          </form.Field>
+
+          <form.Field name="status">
+            {({ state, handleChange }) => (
+              <Field orientation={'horizontal'}>
                 <FieldLabel>Status</FieldLabel>
                 <Switch
                   checked={state.value}
                   onCheckedChange={(val) => handleChange(val)}
                 />
-              </ShadcnField>
+              </Field>
             )}
-          </Field>
+          </form.Field>
         </FieldSet>
 
         <FieldSeparator />
 
-        <ShadcnField orientation="vertical">
-          <Button type="submit">Create User</Button>
-        </ShadcnField>
+        <Field orientation="vertical">
+          <Button type="submit">
+            {isPending ? <Spinner /> : 'Create User'}
+          </Button>
+        </Field>
       </FieldGroup>
     </form>
   )

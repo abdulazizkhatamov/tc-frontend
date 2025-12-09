@@ -6,15 +6,15 @@ import {
 } from '@tabler/icons-react'
 import type { Column } from '@tanstack/react-table'
 
-import { cn } from '@/shared/lib/utils'
-import { Button } from '@/shared/components/ui/button'
+import { cn } from '@/shared/lib/utils.ts'
+import { Button } from '@/shared/components/ui/button.tsx'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/shared/components/ui/dropdown-menu'
+} from '@/shared/components/ui/dropdown-menu.tsx'
 
 interface TableColumnHeaderProps<
   TData,

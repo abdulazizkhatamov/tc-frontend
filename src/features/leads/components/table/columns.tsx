@@ -1,9 +1,8 @@
 import { format } from 'date-fns'
 import { Link } from '@tanstack/react-router'
-import { roles, statuses } from '../../data/data'
 import { TableRowActions } from './table-row-actions'
 import type { ColumnDef, RowData } from '@tanstack/react-table'
-import type { UsersType } from '../../data/schema'
+import type { LeadsType } from '../../data/schema'
 import { Badge } from '@/shared/components/ui/badge'
 import { TableColumnHeader } from '@/shared/components/table/table-column-header.tsx'
 
@@ -14,20 +13,22 @@ declare module '@tanstack/react-table' {
   }
 }
 
-export const columns: Array<ColumnDef<UsersType>> = [
+export const columns: Array<ColumnDef<LeadsType>> = [
   {
-    accessorKey: 'name',
-    header: ({ column }) => <TableColumnHeader column={column} title="Name" />,
+    accessorKey: 'fullName',
+    header: ({ column }) => (
+      <TableColumnHeader column={column} title="Full name" />
+    ),
     cell: ({ row }) => (
-      <Link to={'/users/$id'} params={{ id: row.original.id }}>
+      <Link to={'/leads/$id'} params={{ id: row.original.id }}>
         <div className="flex items-center space-x-2">
           <span className="max-w-[250px] truncate font-medium hover:underline cursor-pointer">
-            {row.getValue('name')}
+            {row.getValue('fullName')}
           </span>
         </div>
       </Link>
     ),
-    meta: { filterKey: 'name', filterVariant: 'text' },
+    meta: { filterKey: 'fullName', filterVariant: 'text' },
     enableSorting: true,
     enableHiding: false,
   },
@@ -65,30 +66,21 @@ export const columns: Array<ColumnDef<UsersType>> = [
     enableHiding: true,
   },
   {
-    accessorKey: 'roles',
-    header: ({ column }) => <TableColumnHeader column={column} title="Roles" />,
+    accessorKey: 'source',
+    header: ({ column }) => (
+      <TableColumnHeader column={column} title="Source" />
+    ),
     cell: ({ row }) => {
-      const roleValues: Array<string> = row.getValue('roles')
-      const matchedRoles = roleValues
-        .map((value) => roles.find((r) => r.value === value))
-        .filter(Boolean)
-
       return (
         <div className="flex flex-wrap gap-2">
-          {matchedRoles.map((role) => (
-            <Badge
-              key={role!.value}
-              variant="secondary"
-              className="text-xs px-2 py-1"
-            >
-              {role!.label}
-            </Badge>
-          ))}
+          <Badge variant="secondary" className="text-xs px-2 py-1">
+            {row.getValue('source')}
+          </Badge>
         </div>
       )
     },
-    meta: { filterKey: 'roles' },
-    enableSorting: false,
+    meta: { filterKey: 'source' },
+    enableSorting: true,
     enableHiding: true,
   },
   {
@@ -97,19 +89,35 @@ export const columns: Array<ColumnDef<UsersType>> = [
       <TableColumnHeader column={column} title="Status" />
     ),
     cell: ({ row }) => {
-      const status = statuses.find((s) => s.value === row.getValue('status'))
-      if (!status) return null
-
       return (
-        <div className="flex items-center gap-2 w-[120px]">
-          <status.icon className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm font-medium">{status.label}</span>
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="secondary" className="text-xs px-2 py-1">
+            {row.getValue('status')}
+          </Badge>
         </div>
       )
     },
-    filterFn: (row, id, value) => value.includes(row.getValue(id)),
     meta: { filterKey: 'status' },
     enableSorting: true,
+    enableHiding: true,
+  },
+  {
+    accessorKey: 'priority',
+    header: ({ column }) => (
+      <TableColumnHeader column={column} title="Priority" />
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="secondary" className="text-xs px-2 py-1">
+            {row.getValue('priority')}
+          </Badge>
+        </div>
+      )
+    },
+    meta: { filterKey: 'priority' },
+    enableSorting: true,
+    enableHiding: true,
   },
   {
     accessorKey: 'createdAt',

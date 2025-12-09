@@ -1,8 +1,10 @@
 import * as React from 'react'
 import {
   IconDashboard,
+  IconFileDescription,
   IconHelp,
   IconInnerShadowTop,
+  IconListDetails,
   IconSearch,
   IconSettings,
   IconUsers,
@@ -35,6 +37,18 @@ const data = {
       url: '/users',
       icon: IconUsers,
       roles: ['ADMIN'],
+    },
+    {
+      title: 'Courses',
+      url: '/courses',
+      icon: IconFileDescription,
+      roles: ['ADMIN', 'STAFF'],
+    },
+    {
+      title: 'Leads',
+      url: '/leads',
+      icon: IconListDetails,
+      roles: ['ADMIN', 'STAFF'],
     },
   ],
   navSecondary: [

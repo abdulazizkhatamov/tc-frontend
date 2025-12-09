@@ -25,7 +25,7 @@ import {
 import { Skeleton } from '@/shared/components/ui/skeleton'
 import { TablePagination } from '@/shared/components/table/table-pagination.tsx'
 
-interface UsersTableProps<TData, TValue> {
+interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
   data: Array<TData>
   pagination: PaginationState
@@ -37,7 +37,7 @@ interface UsersTableProps<TData, TValue> {
   onFilterChange: (dataFilters: Partial<TData>) => void
 }
 
-export function UsersTable<TData, TValue>({
+export function LeadsTable<TData, TValue>({
   columns,
   data,
   pagination,
@@ -47,7 +47,7 @@ export function UsersTable<TData, TValue>({
   isLoading,
   onSortingChange,
   onFilterChange,
-}: UsersTableProps<TData, TValue>) {
+}: TableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})

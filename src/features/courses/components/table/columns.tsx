@@ -1,11 +1,11 @@
 import { format } from 'date-fns'
 import { Link } from '@tanstack/react-router'
-import { roles, statuses } from '../../data/data'
 import { TableRowActions } from './table-row-actions'
 import type { ColumnDef, RowData } from '@tanstack/react-table'
-import type { UsersType } from '../../data/schema'
+import type { CoursesType } from '@/features/courses/data/schema.ts'
 import { Badge } from '@/shared/components/ui/badge'
 import { TableColumnHeader } from '@/shared/components/table/table-column-header.tsx'
+import { statuses } from '@/features/users/data/data.tsx'
 
 declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
@@ -14,81 +14,85 @@ declare module '@tanstack/react-table' {
   }
 }
 
-export const columns: Array<ColumnDef<UsersType>> = [
+export const columns: Array<ColumnDef<CoursesType>> = [
   {
-    accessorKey: 'name',
-    header: ({ column }) => <TableColumnHeader column={column} title="Name" />,
+    accessorKey: 'title',
+    header: ({ column }) => <TableColumnHeader column={column} title="Title" />,
     cell: ({ row }) => (
-      <Link to={'/users/$id'} params={{ id: row.original.id }}>
+      <Link to={'/courses/$id'} params={{ id: row.original.id }}>
         <div className="flex items-center space-x-2">
           <span className="max-w-[250px] truncate font-medium hover:underline cursor-pointer">
-            {row.getValue('name')}
+            {row.getValue('title')}
           </span>
         </div>
       </Link>
     ),
-    meta: { filterKey: 'name', filterVariant: 'text' },
+    meta: { filterKey: 'title', filterVariant: 'text' },
     enableSorting: true,
     enableHiding: false,
   },
   {
-    accessorKey: 'email',
-    header: ({ column }) => <TableColumnHeader column={column} title="Email" />,
+    accessorKey: 'durationWeeks',
+    header: ({ column }) => (
+      <TableColumnHeader column={column} title="Duration / W" />
+    ),
     cell: ({ row }) => (
       <div className="flex items-center space-x-2">
         <span className="max-w-[300px] truncate text-sm text-gray-600 hover:text-gray-900">
-          {row.getValue('email')}
+          {row.getValue('durationWeeks')}
         </span>
       </div>
     ),
-    meta: { filterKey: 'email', filterVariant: 'text' },
+    meta: { filterKey: 'durationWeeks', filterVariant: 'text' },
     enableSorting: true,
     enableHiding: false,
   },
   {
-    accessorKey: 'phone',
-    header: ({ column }) => <TableColumnHeader column={column} title="Phone" />,
-    cell: ({ row }) => {
-      const phone = row.getValue('phone')
-      // Ensure we only render string or placeholder
-      const displayPhone =
-        typeof phone === 'string' && phone.trim() !== '' ? phone : '—'
-
-      return (
-        <div className="flex items-center space-x-2 text-sm text-gray-600">
-          {displayPhone}
-        </div>
-      )
-    },
-    meta: { filterKey: 'phone', filterVariant: 'text' },
+    accessorKey: 'totalHours',
+    header: ({ column }) => (
+      <TableColumnHeader column={column} title="Total hours" />
+    ),
+    cell: ({ row }) => (
+      <div className="flex items-center space-x-2">
+        <span className="max-w-[300px] truncate text-sm text-gray-600 hover:text-gray-900">
+          {row.getValue('totalHours')}
+        </span>
+      </div>
+    ),
+    meta: { filterKey: 'totalHours', filterVariant: 'text' },
     enableSorting: true,
-    enableHiding: true,
+    enableHiding: false,
   },
   {
-    accessorKey: 'roles',
-    header: ({ column }) => <TableColumnHeader column={column} title="Roles" />,
+    accessorKey: 'fee',
+    header: ({ column }) => <TableColumnHeader column={column} title="Fee" />,
+    cell: ({ row }) => (
+      <div className="flex items-center space-x-2">
+        <span className="max-w-[300px] truncate text-sm text-gray-600 hover:text-gray-900">
+          {row.getValue('fee')}
+        </span>
+      </div>
+    ),
+    meta: { filterKey: 'fee', filterVariant: 'text' },
+    enableSorting: true,
+    enableHiding: false,
+  },
+  {
+    accessorKey: 'category',
+    header: ({ column }) => (
+      <TableColumnHeader column={column} title="Category" />
+    ),
     cell: ({ row }) => {
-      const roleValues: Array<string> = row.getValue('roles')
-      const matchedRoles = roleValues
-        .map((value) => roles.find((r) => r.value === value))
-        .filter(Boolean)
-
       return (
         <div className="flex flex-wrap gap-2">
-          {matchedRoles.map((role) => (
-            <Badge
-              key={role!.value}
-              variant="secondary"
-              className="text-xs px-2 py-1"
-            >
-              {role!.label}
-            </Badge>
-          ))}
+          <Badge variant="secondary" className="text-xs px-2 py-1">
+            {row.getValue('category')}
+          </Badge>
         </div>
       )
     },
-    meta: { filterKey: 'roles' },
-    enableSorting: false,
+    meta: { filterKey: 'category' },
+    enableSorting: true,
     enableHiding: true,
   },
   {

@@ -2,10 +2,10 @@ import * as React from 'react'
 import { IconCheck, IconPlus } from '@tabler/icons-react'
 import type { Column } from '@tanstack/react-table'
 
-import type { Filters } from '@/shared/types/api.type'
-import { cn } from '@/shared/lib/utils'
-import { Badge } from '@/shared/components/ui/badge'
-import { Button } from '@/shared/components/ui/button'
+import type { Filters } from '@/shared/types/api.type.ts'
+import { cn } from '@/shared/lib/utils.ts'
+import { Badge } from '@/shared/components/ui/badge.tsx'
+import { Button } from '@/shared/components/ui/button.tsx'
 import {
   Command,
   CommandEmpty,
@@ -14,13 +14,13 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from '@/shared/components/ui/command'
+} from '@/shared/components/ui/command.tsx'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/shared/components/ui/popover'
-import { Separator } from '@/shared/components/ui/separator'
+} from '@/shared/components/ui/popover.tsx'
+import { Separator } from '@/shared/components/ui/separator.tsx'
 
 interface TableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>
@@ -41,7 +41,6 @@ export function TableFacetedFilter<TData, TValue>({
   filters,
   onFilterChange,
 }: TableFacetedFilterProps<TData, TValue>) {
-  const facets = column?.getFacetedUniqueValues()
   const filterKey = column?.columnDef.meta?.filterKey ?? column?.id
   const key = filterKey as keyof typeof filters
   const values = filters[key] as Array<string> | undefined
@@ -107,7 +106,6 @@ export function TableFacetedFilter<TData, TValue>({
                       }
 
                       const filterValues = Array.from(selectedValues)
-
                       onFilterChange({
                         [filterKey]: filterValues.length
                           ? filterValues
@@ -129,11 +127,6 @@ export function TableFacetedFilter<TData, TValue>({
                       <option.icon className="mr-2 h-4 w-4 text-muted-foreground" />
                     )}
                     <span>{option.label}</span>
-                    {facets?.get(option.value) && (
-                      <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">
-                        {facets.get(option.value)}
-                      </span>
-                    )}
                   </CommandItem>
                 )
               })}

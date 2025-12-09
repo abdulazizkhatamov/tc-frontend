@@ -1,13 +1,12 @@
 import { IconPlus, IconX } from '@tabler/icons-react'
 import { Link } from '@tanstack/react-router'
-import { roles } from '../../data/data'
-
 import type { Table } from '@tanstack/react-table'
 import type { Filters } from '@/shared/types/api.type'
 import { Button } from '@/shared/components/ui/button'
 import { DebouncedInput } from '@/shared/components/ui/debounced-input'
-import { TableFacetedFilter } from '@/shared/components/table/table-faceted-filter.tsx'
+import { priorities, sources, statuses } from '@/features/leads/data/data.tsx'
 import { TableViewOptions } from '@/shared/components/table/table-view-options.tsx'
+import { TableFacetedFilter } from '@/shared/components/table/table-faceted-filter.tsx'
 
 interface TableToolbarProps<TData> {
   table: Table<TData>
@@ -21,16 +20,16 @@ export function TableToolbar<TData>({
   onFilterChange,
 }: TableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0
-  const fieldMeta = table.getColumn('name')?.columnDef.meta
+  const fieldMeta = table.getColumn('fullName')?.columnDef.meta
 
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
-        {table.getColumn('name')?.getCanFilter() &&
+        {table.getColumn('fullName')?.getCanFilter() &&
         fieldMeta?.filterKey !== undefined ? (
           <DebouncedInput
             type="text"
-            placeholder="Filter users..."
+            placeholder="Filter leads..."
             value={String(filters[fieldMeta.filterKey] ?? '')}
             onChange={(value) => {
               onFilterChange({
@@ -40,11 +39,29 @@ export function TableToolbar<TData>({
             className="h-8 w-[150px] lg:w-[250px]"
           />
         ) : null}
-        {table.getColumn('roles') && (
+        {table.getColumn('source') && (
           <TableFacetedFilter
-            column={table.getColumn('roles')}
-            title="Roles"
-            options={roles}
+            column={table.getColumn('source')}
+            title="Sources"
+            options={sources}
+            onFilterChange={onFilterChange}
+            filters={filters}
+          />
+        )}
+        {table.getColumn('status') && (
+          <TableFacetedFilter
+            column={table.getColumn('status')}
+            title="Statuses"
+            options={statuses}
+            onFilterChange={onFilterChange}
+            filters={filters}
+          />
+        )}
+        {table.getColumn('priority') && (
+          <TableFacetedFilter
+            column={table.getColumn('priority')}
+            title="Priorities"
+            options={priorities}
             onFilterChange={onFilterChange}
             filters={filters}
           />
@@ -62,7 +79,7 @@ export function TableToolbar<TData>({
       </div>
       <div className="flex gap-2">
         <TableViewOptions table={table} />
-        <Link to="/users/create">
+        <Link to="/leads/create">
           <Button size={'sm'}>
             <IconPlus />
             Create

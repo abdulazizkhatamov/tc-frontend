@@ -1,19 +1,27 @@
 import type { PaginatedData } from '@/shared/types/api.type'
-import type { UsersFiltersType, UsersType } from '../data/schema'
+import type {
+  LeadsFiltersType,
+  LeadsType,
+} from '@/features/leads/data/schema.ts'
+import type {
+  LeadSourceType,
+  LeadStatusType,
+  PriorityType,
+} from '@/shared/schema/enum.schema.ts'
 import axiosInstance from '@/config/axios.config'
 import {
   DEFAULT_PAGE_INDEX,
   DEFAULT_PAGE_SIZE,
 } from '@/shared/consts/pagination.const'
 
-export class UserNotFoundError extends Error {}
+export class LeadNotFoundError extends Error {}
 
 /* ============================================================
-   🔹 GET - /users
+   🔹 GET - /leads
    ------------------------------------------------------------ */
-export async function getUsers(
-  filters: UsersFiltersType,
-): Promise<PaginatedData<UsersType>> {
+export async function getLeads(
+  filters: LeadsFiltersType,
+): Promise<PaginatedData<LeadsType>> {
   const {
     pageIndex = DEFAULT_PAGE_INDEX,
     pageSize = DEFAULT_PAGE_SIZE,
@@ -33,7 +41,7 @@ export async function getUsers(
     params.sortOrder = order
   }
 
-  const response = await axiosInstance.get<PaginatedData<UsersType>>('/users', {
+  const response = await axiosInstance.get<PaginatedData<LeadsType>>('/leads', {
     params,
   })
 
@@ -41,36 +49,38 @@ export async function getUsers(
 }
 
 /* ============================================================
-   🔹 GET - /users/${id}
+   🔹 GET - /leads/${id}
    ------------------------------------------------------------ */
-export async function getUser(id: string): Promise<UsersType> {
-  const response = await axiosInstance.get<UsersType>(`/users/${id}`)
+export async function getLead(id: string): Promise<LeadsType> {
+  const response = await axiosInstance.get<LeadsType>(`/leads/${id}`)
   return response.data
 }
 
 /* ============================================================
-   🔹 POST - /users
+   🔹 POST - /leads
    ------------------------------------------------------------ */
-interface PostUsersPayload {
-  name: string
+interface PostLeadsPayload {
+  fullName: string
   email: string
-  password: string
-  phone: string
-  roles: Array<string>
-  status: boolean
+  phone?: string
+  source: LeadSourceType
+  status: LeadStatusType
+  priority: PriorityType
+  userId: string
+  interestedCourses: Array<string>
 }
 
-export async function postUsers(
-  userData: PostUsersPayload,
-): Promise<UsersType> {
-  const response = await axiosInstance.post<UsersType>('/users', userData)
+export async function postLeads(
+  leadData: PostLeadsPayload,
+): Promise<LeadsType> {
+  const response = await axiosInstance.post<LeadsType>('/leads', leadData)
   return response.data
 }
 
 /* ============================================================
-   🔹 PATCH - /users/${id}
+   🔹 PATCH - /leads/${id}
    ------------------------------------------------------------ */
-export interface PatchUsersPayload {
+export interface PatchLeadsPayload {
   id: string
   name?: string
   email?: string
@@ -79,12 +89,12 @@ export interface PatchUsersPayload {
   status?: boolean
 }
 
-export async function patchUser(
-  userData: PatchUsersPayload,
-): Promise<UsersType> {
-  const response = await axiosInstance.patch<UsersType>(
-    `/users/${userData.id}`,
-    userData,
+export async function patchLead(
+  leadData: PatchLeadsPayload,
+): Promise<LeadsType> {
+  const response = await axiosInstance.patch<LeadsType>(
+    `/leads/${leadData.id}`,
+    leadData,
   )
   return response.data
 }

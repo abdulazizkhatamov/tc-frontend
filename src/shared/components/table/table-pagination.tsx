@@ -6,14 +6,14 @@ import {
 } from '@tabler/icons-react'
 import type { Table } from '@tanstack/react-table'
 
-import { Button } from '@/shared/components/ui/button'
+import { Button } from '@/shared/components/ui/button.tsx'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/shared/components/ui/select'
+} from '@/shared/components/ui/select.tsx'
 
 interface TablePaginationProps<TData> {
   table: Table<TData>
