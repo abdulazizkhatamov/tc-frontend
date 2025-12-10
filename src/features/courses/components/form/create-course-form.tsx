@@ -40,7 +40,7 @@ const createCourseSchema = z.object({
   description: z.string(),
   durationWeeks: z
     .number()
-    .min(0, 'Duration must be greater than 0')
+    .min(1, 'Duration must be greater than 0')
     .max(7, 'Duration must be less than 7.'),
   totalHours: z
     .number()

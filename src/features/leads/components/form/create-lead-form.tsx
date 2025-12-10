@@ -42,8 +42,6 @@ import {
 } from '@/shared/components/ui/select.tsx'
 import { DebouncedSelect } from '@/shared/components/ui/debounced-select.tsx'
 import { getCourses } from '@/features/courses/api/courses.api.ts'
-// import { DebouncedSelect } from '@/shared/components/ui/debounced-select.tsx'
-// import { roleOptions } from '@/features/users/data/roles.ts'
 
 const createLeadSchema = z.object({
   fullName: z.string().min(1, 'Enter a valid name'),
@@ -53,7 +51,7 @@ const createLeadSchema = z.object({
   status: leadStatusEnum,
   priority: priorityEnum,
   userId: z.string(),
-  interestedCourses: z.array(z.string()),
+  interestedCourses: z.array(z.string()).min(1, 'Select at least one course'),
 })
 
 interface Props {
@@ -63,7 +61,7 @@ interface Props {
 export default function CreateLeadForm({ userId }: Props) {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const { mutate: createLead, isPending } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: postLeads,
     onSuccess: async (response) => {
       await queryClient.invalidateQueries({ queryKey: ['leads'] })
@@ -90,7 +88,9 @@ export default function CreateLeadForm({ userId }: Props) {
       interestedCourses: [] as Array<string>,
     },
     validators: { onSubmit: createLeadSchema },
-    onSubmit: ({ value }) => createLead(value),
+    onSubmit: ({ value }) => {
+      mutate(value)
+    },
   })
 
   return (
@@ -153,7 +153,9 @@ export default function CreateLeadForm({ userId }: Props) {
 
                 <DebouncedSelect
                   value={state.value}
-                  onChange={() => handleChange}
+                  onChange={(value) =>
+                    handleChange(() => value as Array<string>)
+                  }
                   loadOptions={async (query) => {
                     const data = await getCourses({ title: query })
                     return data.result.map((course) => ({
@@ -164,7 +166,7 @@ export default function CreateLeadForm({ userId }: Props) {
                   multiple
                   debounce={1000}
                   debounceSearch
-                  placeholder="Select Roles"
+                  placeholder="Select Courses"
                 />
 
                 <FieldError errors={state.meta.errors} />

@@ -82,11 +82,13 @@ export async function postLeads(
    ------------------------------------------------------------ */
 export interface PatchLeadsPayload {
   id: string
-  name?: string
-  email?: string
+  fullName?: string
   phone?: string | null
-  roles?: Array<'ADMIN' | 'STAFF' | 'INSTRUCTOR'>
-  status?: boolean
+  source?: LeadSourceType
+  status?: LeadStatusType
+  priority?: PriorityType
+  userId?: string
+  interestedCourses?: Array<string>
 }
 
 export async function patchLead(

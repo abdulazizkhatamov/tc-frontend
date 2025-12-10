@@ -1,5 +1,11 @@
 import z from 'zod'
 
+// ROLES
+export const roleEnum = z.enum(['ADMIN', 'STAFF', 'INSTRUCTOR'], {
+  message: 'Please select a role',
+})
+export type RoleType = z.infer<typeof roleEnum>
+
 // PRIORITY
 export const priorityEnum = z.enum(['LOW', 'MEDIUM', 'HIGH'], {
   message: 'Please select a priority',

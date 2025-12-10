@@ -1,5 +1,6 @@
 import type { PaginatedData } from '@/shared/types/api.type'
 import type { UsersFiltersType, UsersType } from '../data/schema'
+import type { RoleType } from '@/shared/schema/enum.schema.ts'
 import axiosInstance from '@/config/axios.config'
 import {
   DEFAULT_PAGE_INDEX,
@@ -75,7 +76,7 @@ export interface PatchUsersPayload {
   name?: string
   email?: string
   phone?: string | null
-  roles?: Array<'ADMIN' | 'STAFF' | 'INSTRUCTOR'>
+  roles?: Array<RoleType>
   status?: boolean
 }
 

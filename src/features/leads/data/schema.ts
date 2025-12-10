@@ -16,7 +16,7 @@ export const leadSchema = z.object({
   source: leadSourceEnum,
   status: leadStatusEnum,
   priority: priorityEnum,
-  interestedCourses: z.array(z.object(courseSchema)),
+  interestedCourses: z.array(courseSchema),
   userId: z.string(),
   assignedTo: userSchema,
   createdAt: z.string(),

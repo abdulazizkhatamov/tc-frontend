@@ -1,11 +1,12 @@
 import React from 'react'
 import { z } from 'zod'
 import { useForm } from '@tanstack/react-form'
-import { IconCheck, IconPlus } from '@tabler/icons-react'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner' // Define the type for props (if any)
 import type { UsersType } from '@/features/users/data/schema.ts'
 import type { PatchUsersPayload } from '@/features/users/api/users.api.ts'
+import type { RoleType } from '@/shared/schema/enum.schema.ts' // Define the type for props (if any)
+import { roleEnum } from '@/shared/schema/enum.schema.ts'
 import { patchUser } from '@/features/users/api/users.api.ts'
 import {
   Field,
@@ -18,30 +19,16 @@ import {
   FieldSet,
 } from '@/shared/components/ui/field.tsx'
 import { Input } from '@/shared/components/ui/input.tsx'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/shared/components/ui/popover.tsx'
 import { Button } from '@/shared/components/ui/button.tsx'
-import { Badge } from '@/shared/components/ui/badge.tsx'
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-} from '@/shared/components/ui/command.tsx'
-import { cn } from '@/shared/lib/utils.ts'
+
 import { Switch } from '@/shared/components/ui/switch.tsx'
-import { roleOptions } from '@/features/users/data/roles.ts'
 import { getAxiosErrorMessage } from '@/shared/utils/axios.utils.ts'
-import { Spinner } from '@/shared/components/ui/spinner.tsx' // Define the type for props (if any)
+import { Spinner } from '@/shared/components/ui/spinner.tsx'
+import { DebouncedSelect } from '@/shared/components/ui/debounced-select.tsx'
+import { roles } from '@/features/users/data/data.tsx'
 
 // Define the type for props (if any)
-interface IProps {
+interface Props {
   user: UsersType
 }
 
@@ -50,15 +37,13 @@ const patchUserSchema = z.object({
   name: z.string('Enter a valid name'),
   email: z.email('Enter a valid email'),
   phone: z.string().or(z.literal('')),
-  roles: z
-    .array(z.enum(['ADMIN', 'STAFF', 'INSTRUCTOR']))
-    .min(1, 'At least one role must be assigned'),
+  roles: z.array(roleEnum).min(1, 'At least one role must be assigned'),
   status: z.boolean(),
 })
 
 // Functional component using TypeScript
-const PatchUserForm: React.FC<IProps> = ({ user }) => {
-  const { mutate: mutatePatchUser, isPending } = useMutation({
+const PatchUserForm: React.FC<Props> = ({ user }) => {
+  const { mutate, isPending } = useMutation({
     mutationFn: patchUser,
     onSuccess: () => {
       toast.info('Successfully updated user', { position: 'top-center' })
@@ -122,7 +107,7 @@ const PatchUserForm: React.FC<IProps> = ({ user }) => {
         updatedFields.status = value.status
       }
 
-      mutatePatchUser(updatedFields)
+      mutate(updatedFields)
     },
   })
 
@@ -194,100 +179,19 @@ const PatchUserForm: React.FC<IProps> = ({ user }) => {
 
           <form.Field name="roles">
             {({ state, handleChange }) => {
-              const selectedValues = new Set(state.value)
-
               return (
                 <Field data-invalid={!state.meta.isValid}>
                   <FieldLabel>Roles</FieldLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 border-dashed"
-                      >
-                        <IconPlus />
-                        Select Roles
-                        {selectedValues.size > 0 && (
-                          <>
-                            <div className="hidden space-x-1 lg:flex">
-                              {selectedValues.size > 2 ? (
-                                <Badge variant="secondary">
-                                  {selectedValues.size} selected
-                                </Badge>
-                              ) : (
-                                roleOptions
-                                  .filter((option) =>
-                                    selectedValues.has(option.value),
-                                  )
-                                  .map((option) => (
-                                    <Badge
-                                      key={option.value}
-                                      variant="secondary"
-                                    >
-                                      {option.label}
-                                    </Badge>
-                                  ))
-                              )}
-                            </div>
-                          </>
-                        )}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0" align="start">
-                      <Command>
-                        <CommandInput placeholder="Search roles..." />
-                        <CommandList>
-                          <CommandEmpty>No results found.</CommandEmpty>
-                          <CommandGroup>
-                            {roleOptions.map((option) => {
-                              const isSelected = selectedValues.has(
-                                option.value,
-                              )
-                              return (
-                                <CommandItem
-                                  key={option.value}
-                                  onSelect={() => {
-                                    if (isSelected) {
-                                      selectedValues.delete(option.value)
-                                    } else {
-                                      selectedValues.add(option.value)
-                                    }
-                                    handleChange(Array.from(selectedValues))
-                                  }}
-                                >
-                                  <div
-                                    className={cn(
-                                      'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
-                                      isSelected
-                                        ? 'bg-primary text-primary-foreground'
-                                        : 'opacity-50 [&_svg]:invisible',
-                                    )}
-                                  >
-                                    <IconCheck />
-                                  </div>
-                                  <span>{option.label}</span>
-                                </CommandItem>
-                              )
-                            })}
-                          </CommandGroup>
-                          {selectedValues.size > 0 && (
-                            <>
-                              <CommandSeparator />
-                              <CommandGroup>
-                                <CommandItem
-                                  onSelect={() => handleChange([])}
-                                  className="justify-center text-center"
-                                >
-                                  Clear selections
-                                </CommandItem>
-                              </CommandGroup>
-                            </>
-                          )}
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
+                  <DebouncedSelect
+                    value={state.value}
+                    onChange={(value) =>
+                      handleChange(() => value as Array<RoleType>)
+                    }
+                    options={roles}
+                    multiple
+                    debounceSearch
+                    placeholder="Select Roles"
+                  />
                   <FieldError errors={state.meta.errors} />
                 </Field>
               )

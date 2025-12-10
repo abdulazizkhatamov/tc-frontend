@@ -20,7 +20,7 @@ import { Switch } from '@/shared/components/ui/switch'
 import { getAxiosErrorMessage } from '@/shared/utils/axios.utils'
 import { Spinner } from '@/shared/components/ui/spinner.tsx'
 import { DebouncedSelect } from '@/shared/components/ui/debounced-select.tsx'
-import { roleOptions } from '@/features/users/data/roles.ts'
+import { roles } from '@/features/users/data/data.tsx'
 
 const createUserSchema = z.object({
   name: z.string().min(1, 'Enter a valid name'),
@@ -158,8 +158,10 @@ export default function CreateUserForm() {
 
                 <DebouncedSelect
                   value={state.value}
-                  onChange={(value) => handleChange(value as Array<string>)}
-                  options={roleOptions}
+                  onChange={(value) =>
+                    handleChange(() => value as Array<string>)
+                  }
+                  options={roles}
                   multiple
                   debounceSearch
                   placeholder="Select Roles"

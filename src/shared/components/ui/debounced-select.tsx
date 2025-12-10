@@ -15,24 +15,25 @@ import {
 import type { Updater } from '@tanstack/form-core'
 import { cn } from '@/shared/lib/utils.ts'
 
-interface Option<T extends string> {
+interface Option<TData> {
   label: string
-  value: T
+  value: TData
 }
 
-interface DebouncedSelectProps<T extends string> {
-  value: string | Array<string>
-  onChange: (value: Updater<string | Array<string>>) => void
+interface DebouncedSelectProps<TData> {
+  value: TData | Array<TData>
+  onChange: (value: Updater<TData | Array<TData>>) => void
   onBlur?: () => void
-  options?: ReadonlyArray<Option<T>> // static options
-  loadOptions?: (query: string) => Promise<ReadonlyArray<Option<T>>> // dynamic options
+  options?: ReadonlyArray<Option<TData>> // static options
+  loadOptions?: (query: string) => Promise<ReadonlyArray<Option<TData>>> // dynamic options
   debounce?: number
   multiple?: boolean
   placeholder?: string
   debounceSearch?: boolean
+  getKey?: (value: TData) => string
 }
 
-export function DebouncedSelect<T extends string>({
+export function DebouncedSelect<TData>({
   value: initialValue,
   onChange,
   onBlur,
@@ -42,12 +43,13 @@ export function DebouncedSelect<T extends string>({
   multiple = false,
   placeholder = 'Select...',
   debounceSearch = true,
-}: DebouncedSelectProps<T>) {
-  const [value, setValue] = useState<string | Array<string>>(initialValue)
+  getKey = (v) => String(v), // default: string coercion for primitives
+}: DebouncedSelectProps<TData>) {
+  const [value, setValue] = useState<TData | Array<TData>>(initialValue)
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState(search)
 
-  // Debounce search input
+  // Debounce search
   useEffect(() => {
     if (debounce && debounceSearch) {
       const timeout = setTimeout(() => setDebouncedSearch(search), debounce)
@@ -57,12 +59,9 @@ export function DebouncedSelect<T extends string>({
     }
   }, [search, debounce, debounceSearch])
 
-  // Update value when initialValue changes
-  useEffect(() => {
-    setValue(initialValue)
-  }, [initialValue])
+  useEffect(() => setValue(initialValue), [initialValue])
 
-  // Debounced onChange
+  // Debounced propagate onChange
   useEffect(() => {
     if (debounce) {
       const timeout = setTimeout(() => onChange(value), debounce)
@@ -72,7 +71,7 @@ export function DebouncedSelect<T extends string>({
     }
   }, [value, debounce, onChange])
 
-  // Load dynamic options with React Query if loadOptions exists
+  // Load dynamic options
   const { data: dynamicOptions = [], isLoading } = useQuery({
     queryKey: ['debounced-select', debouncedSearch],
     queryFn: () =>
@@ -80,51 +79,54 @@ export function DebouncedSelect<T extends string>({
     enabled: !!loadOptions,
   })
 
-  // Filter static options if no loadOptions
   const filteredOptions = loadOptions
     ? dynamicOptions
     : options.filter((o) =>
         o.label.toLowerCase().includes(debouncedSearch.toLowerCase()),
       )
 
-  const selectedValues = new Set(
-    Array.isArray(value) ? value : value ? [value] : [],
+  // Create a Set of selected keys for fast lookup
+  const selectedKeys = new Set(
+    (Array.isArray(value) ? value : value ? [value] : []).map(getKey),
   )
 
-  const toggleValue = (val: string) => {
+  const toggleValue = (val: TData) => {
     if (multiple) {
-      const newSet = new Set(selectedValues)
-      if (newSet.has(val)) newSet.delete(val)
-      else newSet.add(val)
-      setValue(Array.from(newSet))
+      const current = Array.isArray(value) ? [...value] : []
+      const key = getKey(val)
+
+      if (selectedKeys.has(key)) {
+        setValue(current.filter((v) => getKey(v) !== key))
+      } else {
+        setValue([...current, val])
+      }
     } else {
-      setValue(val === value ? '' : val)
+      const key = getKey(val)
+      const currentKey = value ? getKey(value as TData) : null
+      setValue(key === currentKey ? ('' as any) : val)
     }
   }
+
+  const selectedLabels = filteredOptions
+    .filter((o) => selectedKeys.has(getKey(o.value)))
+    .map((o) => o.label)
 
   return (
     <Popover onOpenChange={(open) => !open && onBlur?.()}>
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm" className="h-8 border-dashed">
           <IconPlus />
-          {selectedValues.size > 0
+          {selectedLabels.length > 0
             ? multiple
-              ? selectedValues.size > 2
-                ? `${selectedValues.size} selected`
-                : filteredOptions
-                    .filter((o) => selectedValues.has(o.value))
-                    .map((o) => o.label)
-                    .join(', ')
-              : filteredOptions.find((o) => o.value === value)?.label
+              ? selectedLabels.length > 2
+                ? `${selectedLabels.length} selected`
+                : selectedLabels.join(', ')
+              : selectedLabels[0]
             : placeholder}
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent
-        key={filteredOptions.length}
-        className="w-[200px] p-0"
-        align="start"
-      >
+      <PopoverContent key={filteredOptions.length} className="w-[200px] p-0">
         <Command>
           <CommandInput
             placeholder="Search..."
@@ -139,10 +141,12 @@ export function DebouncedSelect<T extends string>({
 
             <CommandGroup>
               {filteredOptions.map((option) => {
-                const isSelected = selectedValues.has(option.value)
+                const key = getKey(option.value)
+                const isSelected = selectedKeys.has(key)
+
                 return (
                   <CommandItem
-                    key={option.value}
+                    key={key}
                     onSelect={() => toggleValue(option.value)}
                   >
                     <div
@@ -161,7 +165,7 @@ export function DebouncedSelect<T extends string>({
               })}
             </CommandGroup>
 
-            {selectedValues.size > 0 && multiple && (
+            {multiple && selectedKeys.size > 0 && (
               <>
                 <CommandSeparator />
                 <CommandGroup>
