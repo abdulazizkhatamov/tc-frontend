@@ -1,0 +1,114 @@
+[
+  {
+    "id": "TASK_1",
+    "priority": "CRITICAL",
+    "tags": [
+      "CRUD",
+      "UI"
+    ],
+    "title": "Users CRUD",
+    "description": "",
+    "status": "DONE",
+    "date": {
+      "date": {
+        "year": 2025,
+        "month": 12,
+        "day": 6
+      },
+      "time": {
+        "hour": 13,
+        "minute": 26,
+        "second": 17,
+        "nano": 846513983
+      }
+    },
+    "finishDate": {
+      "date": {
+        "year": 2025,
+        "month": 12,
+        "day": 6
+      },
+      "time": {
+        "hour": 18,
+        "minute": 7,
+        "second": 36,
+        "nano": 962882272
+      }
+    },
+    "isImported": false
+  },
+  {
+    "id": "TASK_4",
+    "priority": "HIGH",
+    "tags": [
+      "UI"
+    ],
+    "title": "Table Height",
+    "description": "Limited table height (screen) same as previous MUI Table.",
+    "status": "DONE",
+    "date": {
+      "date": {
+        "year": 2025,
+        "month": 12,
+        "day": 6
+      },
+      "time": {
+        "hour": 13,
+        "minute": 27,
+        "second": 38,
+        "nano": 841559508
+      }
+    },
+    "finishDate": {
+      "date": {
+        "year": 2025,
+        "month": 12,
+        "day": 6
+      },
+      "time": {
+        "hour": 17,
+        "minute": 46,
+        "second": 8,
+        "nano": 738798949
+      }
+    },
+    "isImported": false
+  },
+  {
+    "id": "TASK_7",
+    "priority": "MEDIUM",
+    "tags": [
+      "UI"
+    ],
+    "title": "Remove unnecesarry features from Users",
+    "description": "Remove unnecesarry features from Users\n\nRemove Make copy, Favorite buttons... ",
+    "status": "DONE",
+    "date": {
+      "date": {
+        "year": 2025,
+        "month": 12,
+        "day": 6
+      },
+      "time": {
+        "hour": 13,
+        "minute": 29,
+        "second": 11,
+        "nano": 426790473
+      }
+    },
+    "finishDate": {
+      "date": {
+        "year": 2025,
+        "month": 12,
+        "day": 6
+      },
+      "time": {
+        "hour": 17,
+        "minute": 19,
+        "second": 55,
+        "nano": 35073572
+      }
+    },
+    "isImported": false
+  }
+]
